@@ -16,6 +16,9 @@ function FooterDisclaimer() {
         height: 40,
         borderTop: '1px solid #E7DFEE',
         background: '#FFFCFF',
+        alignContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
       }}
     >
       <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style={{ flexShrink: 0 }}>
