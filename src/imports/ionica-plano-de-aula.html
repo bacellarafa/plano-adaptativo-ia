@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iônica – Plano de Aula Adaptativo com IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --purple:#7C3AED;
+  --purple-dark:#5B21B6;
+  --purple-mid:#9F67F5;
+  --purple-bg:#F5F0FF;
+  --purple-border:#C4B5FD;
+  --orange:#F97316;
+  --orange-dark:#EA580C;
+  --green:#16A34A;
+  --green-bg:#DCFCE7;
+  --magenta:#DB2777;
+  --gray-50:#F9FAFB;
+  --gray-100:#F3F4F6;
+  --gray-200:#E5E7EB;
+  --gray-300:#D1D5DB;
+  --gray-400:#9CA3AF;
+  --gray-500:#6B7280;
+  --gray-600:#4B5563;
+  --gray-700:#374151;
+  --gray-800:#1F2937;
+  --gray-900:#111827;
+}
+html,body{height:100%;font-family:'Inter',system-ui,sans-serif;background:#fff;color:var(--gray-800);-webkit-font-smoothing:antialiased}
+
+/* ── LAYOUT ─────────────────────────────── */
+.app{display:flex;height:100vh;background:#fff;overflow:hidden}
+
+/* ── SIDEBAR ─────────────────────────────── */
+.sidebar{
+  width:112px;flex-shrink:0;
+  background:#fff;border-right:1px solid var(--gray-100);
+  display:flex;flex-direction:column;padding:18px 0 12px;
+  overflow:hidden;
+}
+.sb-logo{
+  padding:0 12px 22px;display:flex;justify-content:center;
+  font-size:21px;font-weight:900;letter-spacing:-0.5px;user-select:none;
+}
+.sb-logo .li{color:var(--orange)}
+.sb-logo .lr{color:var(--purple)}
+
+.sb-item{
+  display:flex;flex-direction:column;align-items:center;
+  padding:7px 8px;margin:1px 8px;cursor:pointer;
+  border-radius:10px;gap:5px;position:relative;
+  transition:background .15s;text-decoration:none;
+}
+.sb-item:hover{background:var(--gray-50)}
+.sb-item.active{background:var(--purple-bg)}
+.sb-item.active::before{
+  content:'';position:absolute;left:-8px;top:22%;bottom:22%;
+  width:3px;background:var(--purple);border-radius:0 3px 3px 0;
+}
+.sb-icon{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.sb-icon.orange{background:#FF5C4D}
+.sb-icon.blue{background:#3B9EF4}
+.sb-icon svg{display:block}
+.sb-lbl{font-size:10px;font-weight:500;color:var(--gray-500);text-align:center;line-height:1.3}
+.sb-item.active .sb-lbl{color:var(--purple);font-weight:600}
+.sb-spacer{flex:1}
+.sb-sep{height:1px;background:var(--gray-100);margin:8px 12px}
+.sb-collapse{
+  display:flex;align-items:center;justify-content:center;
+  padding:6px;cursor:pointer;color:var(--gray-400);
+  font-size:12px;font-weight:700;
+}
+
+/* ── MAIN ────────────────────────────────── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ── TOP HEADER ──────────────────────────── */
+.topbar{
+  height:52px;flex-shrink:0;
+  border-bottom:1px solid var(--gray-100);
+  display:flex;align-items:center;padding:0 22px;gap:16px;background:#fff;
+}
+.tb-menu{display:flex;align-items:center;gap:7px;cursor:pointer}
+.tb-menu svg{color:var(--orange)}
+.tb-menu span{font-size:14px;font-weight:600;color:var(--orange)}
+.tb-center{flex:1;display:flex;justify-content:center}
+.tb-school{
+  display:flex;align-items:center;gap:5px;
+  font-size:14px;font-weight:500;color:var(--gray-700);cursor:pointer;
+}
+.tb-school svg{color:var(--gray-400)}
+.tb-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,#a78bfa,#ec4899);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;overflow:hidden;border:2px solid var(--gray-200);
+  font-size:0;
+}
+.tb-avatar svg{display:block}
+
+/* ── SCREENS ─────────────────────────────── */
+.screen{display:none;flex:1;flex-direction:column;overflow:hidden}
+.screen.active{display:flex}
+
+/* ══════════════════════════════════════════
+   HOME
+══════════════════════════════════════════ */
+.home-wrap{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:40px 24px;text-align:center;
+}
+.home-h1{font-size:36px;font-weight:800;line-height:1.18;margin-bottom:14px}
+.home-h1 .p{color:var(--purple)}
+.home-h1 .o{color:var(--orange)}
+.home-sub{font-size:15px;color:var(--gray-500);margin-bottom:52px;max-width:520px}
+.home-cards{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;max-width:900px}
+.hcard{
+  border:1.5px solid var(--gray-200);border-radius:14px;
+  padding:24px 22px;width:268px;text-align:left;
+  cursor:pointer;transition:border-color .2s,box-shadow .2s;background:#fff;
+}
+.hcard:hover{border-color:var(--purple);box-shadow:0 4px 20px rgba(124,58,237,.1)}
+.hcard-title{
+  font-size:17px;font-weight:700;color:var(--purple);
+  display:flex;align-items:center;gap:9px;margin-bottom:9px;
+}
+.hcard-title svg{flex-shrink:0}
+.hcard-desc{font-size:13px;color:var(--gray-500);line-height:1.6}
+.badge-new{
+  background:var(--purple-bg);color:var(--purple);
+  font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;
+}
+
+/* ══════════════════════════════════════════
+   SHARED LESSON PLAN CHROME
+══════════════════════════════════════════ */
+.lp-tabs{
+  border-bottom:1px solid var(--gray-200);padding:0 22px;
+  display:flex;align-items:center;flex-shrink:0;background:#fff;
+  gap:4px;
+}
+.lp-tab{
+  padding:15px 8px;font-size:13px;font-weight:500;color:var(--gray-500);
+  cursor:pointer;border-bottom:2.5px solid transparent;
+  display:flex;align-items:center;gap:6px;white-space:nowrap;
+  transition:color .15s;margin-bottom:-1px;
+}
+.lp-tab:hover{color:var(--purple)}
+.lp-tab.active{color:var(--purple);border-bottom-color:var(--purple);font-weight:600}
+.lp-tab-plus{color:var(--purple);font-size:16px;font-weight:800;line-height:1}
+.lp-x{
+  margin-left:auto;color:var(--gray-400);cursor:pointer;
+  padding:6px;border-radius:6px;transition:color .15s,background .15s;
+  display:flex;align-items:center;
+}
+.lp-x:hover{color:var(--gray-700);background:var(--gray-100)}
+
+.lp-scroll{flex:1;overflow-y:auto;padding:26px 28px 48px}
+
+.lp-hrow{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:28px;gap:16px;
+}
+.lp-h1{
+  font-size:32px;font-weight:800;
+  display:flex;align-items:center;gap:10px;line-height:1;
+}
+.lp-h1 .p{color:var(--purple)}
+.lp-h1 .o{color:var(--orange)}
+.lp-h1-q{
+  width:24px;height:24px;border-radius:50%;
+  border:1.5px solid var(--gray-300);display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--gray-400);cursor:pointer;
+}
+.lp-acts{display:flex;align-items:center;gap:10px}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .15s;line-height:1;font-family:'Inter',sans-serif;
+  white-space:nowrap;
+}
+.btn-primary{background:var(--purple);color:#fff;border:none}
+.btn-primary:hover{background:var(--purple-dark)}
+.btn-outline{background:#fff;color:var(--purple);border:1.5px solid var(--purple)}
+.btn-outline:hover{background:var(--purple-bg)}
+.btn-disabled{
+  background:#fff;color:var(--gray-300);
+  border:1.5px solid var(--gray-200);cursor:default;
+}
+.btn-disabled:hover{background:#fff}
+.btn-ghost{
+  background:none;border:none;color:var(--gray-600);
+  font-size:13px;font-weight:500;cursor:pointer;
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:'Inter',sans-serif;
+}
+.btn-ghost:hover{color:var(--purple)}
+
+/* ── STEP LAYOUT ──────────────────────────── */
+.step-layout{display:flex;gap:40px}
+.stepper{width:162px;flex-shrink:0}
+.step-node{display:flex;flex-direction:column}
+.step-row{display:flex;align-items:flex-start;gap:13px}
+.step-circ{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;flex-shrink:0;
+  transition:all .2s;
+}
+.step-circ.active{background:var(--purple);color:#fff}
+.step-circ.done{
+  background:var(--purple-bg);color:var(--purple);
+  border:2px solid var(--purple);
+}
+.step-circ.idle{
+  background:#fff;color:var(--gray-400);
+  border:1.5px solid var(--gray-300);
+}
+.step-labels{padding-top:5px}
+.step-name{font-size:13px;font-weight:700;color:var(--gray-700)}
+.step-name.cur{color:var(--purple)}
+.step-hint{font-size:11px;color:var(--gray-400);margin-top:2px;line-height:1.4}
+.step-vline{
+  width:1.5px;height:38px;margin:5px 0 5px 16px;
+  border-radius:2px;transition:background .2s;
+}
+.step-vline.done{background:var(--purple)}
+.step-vline.idle{background:var(--gray-200)}
+
+/* ── STEP CONTENT ──────────────────────────── */
+.sc{flex:1;min-width:0}
+.sc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.sc-title{font-size:18px;font-weight:700;color:var(--gray-900)}
+.sc-req{font-size:11px;color:var(--gray-400)}
+
+/* Card option */
+.card-opt{
+  border:1.5px solid var(--gray-200);border-radius:11px;
+  padding:14px 16px;cursor:pointer;
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:14px;transition:all .15s;background:#fff;
+}
+.card-opt:hover{border-color:var(--purple-border)}
+.card-opt.sel{background:var(--purple-bg);border-color:var(--purple)}
+.card-opt-icon{color:var(--purple);flex-shrink:0}
+.card-opt-body{flex:1}
+.card-opt-title{font-size:13px;font-weight:600;color:var(--gray-700)}
+.card-opt.sel .card-opt-title{color:var(--purple)}
+.card-opt-desc{font-size:11.5px;color:var(--gray-500);margin-top:3px;line-height:1.5}
+.radio-ring{
+  width:19px;height:19px;border-radius:50%;
+  border:1.5px solid var(--gray-300);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.card-opt.sel .radio-ring{border-color:var(--purple);background:var(--purple)}
+.radio-inner{width:7px;height:7px;border-radius:50%;background:#fff}
+
+/* Accordion */
+.acc{border:1.5px solid var(--gray-200);border-radius:11px;overflow:hidden;margin-bottom:12px}
+.acc-hdr{
+  padding:13px 16px;display:flex;align-items:center;
+  justify-content:space-between;cursor:pointer;background:#fff;
+  user-select:none;transition:background .15s;
+}
+.acc-hdr:hover{background:var(--gray-50)}
+.acc-hdr.open{border-bottom:1px solid var(--gray-200)}
+.acc-title{font-size:13.5px;font-weight:600;color:var(--gray-800);display:flex;align-items:center;gap:8px}
+.acc-title svg{color:var(--purple)}
+.acc-right{display:flex;align-items:center;gap:10px}
+.acc-sel-badge{
+  background:var(--gray-100);color:var(--gray-600);
+  font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;
+}
+.acc-count{font-size:12px;color:var(--gray-500)}
+.chevron{transition:transform .2s;color:var(--gray-400);display:flex;align-items:center}
+.chevron.up{transform:rotate(180deg)}
+.acc-body{padding:16px;background:#fff;display:none}
+.acc-body.open{display:block}
+
+/* Badge optional */
+.badge-opt{
+  background:var(--gray-100);color:var(--gray-500);
+  font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;
+}
+
+/* Radio groups */
+.rg-label{font-size:12px;font-weight:700;color:var(--gray-600);margin-bottom:10px}
+.rg-row{display:flex;flex-wrap:wrap;gap:8px 22px;margin-bottom:14px}
+.rl{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;color:var(--gray-700)}
+.rl input[type=radio]{accent-color:var(--green);width:16px;height:16px;cursor:pointer}
+.rl input[type=checkbox]{accent-color:var(--purple);width:15px;height:15px;cursor:pointer}
+
+/* Form fields */
+.frow{display:flex;gap:16px;margin-top:20px}
+.ffield{flex:1}
+.flabel{font-size:12.5px;font-weight:600;color:var(--gray-700);margin-bottom:6px;display:block}
+.finput{
+  display:flex;align-items:center;gap:9px;
+  border:1.5px solid var(--gray-200);border-radius:9px;padding:10px 13px;
+  transition:border-color .15s;
+}
+.finput:focus-within{border-color:var(--purple)}
+.finput svg{color:var(--purple);flex-shrink:0}
+.finput input{
+  border:none;outline:none;background:none;flex:1;
+  font-size:13.5px;color:var(--gray-800);font-family:'Inter',sans-serif;
+}
+.finput input::placeholder{color:var(--gray-400)}
+.fhint{font-size:11px;color:var(--gray-500);margin-top:6px;line-height:1.55}
+
+/* ══════════════════════════════════════════
+   PASSO 2 — TEMÁTICA
+══════════════════════════════════════════ */
+.tema-box{
+  border:1.5px solid var(--gray-200);border-radius:9px;padding:11px 14px;
+  display:flex;align-items:center;gap:8px;margin-bottom:6px;transition:border-color .15s;
+}
+.tema-box:focus-within{border-color:var(--purple)}
+.tema-box input{
+  border:none;outline:none;background:none;flex:1;
+  font-size:13.5px;color:var(--gray-800);font-family:'Inter',sans-serif;
+}
+.tema-box input::placeholder{color:var(--gray-400)}
+.tema-clear{
+  color:var(--gray-400);cursor:pointer;display:flex;align-items:center;
+  padding:2px;border-radius:50%;transition:color .15s,background .15s;
+}
+.tema-clear:hover{color:var(--gray-600);background:var(--gray-100)}
+.tema-hint{font-size:12px;color:var(--gray-500);margin-bottom:16px}
+
+.suggs{display:flex;gap:12px;margin-bottom:20px}
+.sug{
+  border:1.5px solid var(--gray-200);border-radius:10px;
+  padding:12px 14px;flex:1;cursor:pointer;transition:all .15s;background:#fff;
+}
+.sug:hover{border-color:var(--purple-border);background:var(--purple-bg)}
+.sug.sel{border-color:var(--purple);background:var(--purple-bg)}
+.sug-t{font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:4px}
+.sug.sel .sug-t{color:var(--purple)}
+.sug-d{font-size:11px;color:var(--gray-400)}
+
+/* Upload */
+.upload{
+  border:1.5px dashed var(--gray-300);border-radius:11px;
+  padding:32px 20px;text-align:center;cursor:pointer;transition:all .15s;
+}
+.upload:hover{border-color:var(--purple);background:var(--purple-bg)}
+.upload svg{color:var(--purple);margin-bottom:10px}
+.upload-txt{font-size:13.5px;color:var(--gray-500);margin-bottom:13px}
+.upload-btn{
+  border:1.5px solid var(--purple);color:var(--purple);background:#fff;
+  border-radius:8px;padding:8px 22px;font-size:13.5px;font-weight:700;
+  cursor:pointer;font-family:'Inter',sans-serif;transition:background .15s;
+}
+.upload-btn:hover{background:var(--purple-bg)}
+.upload-meta{font-size:11px;color:var(--gray-400);margin-top:10px;line-height:1.7}
+
+/* ══════════════════════════════════════════
+   PASSO 3 — ADAPTAÇÕES
+══════════════════════════════════════════ */
+.tog-card{
+  border:1.5px solid var(--gray-200);border-radius:11px;
+  padding:16px;cursor:pointer;
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:14px;transition:all .15s;background:#fff;
+}
+.tog-card:hover{border-color:var(--purple-border)}
+.tog-card.on{background:var(--purple-bg);border-color:var(--purple)}
+.tog-icon{color:var(--purple);flex-shrink:0}
+.tog-body{flex:1}
+.tog-title{font-size:13.5px;font-weight:700;color:var(--gray-700)}
+.tog-card.on .tog-title{color:var(--purple)}
+.tog-desc{font-size:12px;color:var(--gray-500);margin-top:3px}
+.tog-dot{
+  width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  transition:background .2s;
+}
+
+/* Profiles dropdown */
+.pfl-section{display:none;margin-bottom:14px}
+.pfl-section.show{display:block}
+.pfl-label{font-size:12.5px;font-weight:600;color:var(--gray-700);margin-bottom:7px}
+.pfl-select{
+  border:1.5px solid var(--purple);border-radius:9px;
+  padding:11px 14px;display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;background:var(--purple-bg);color:var(--gray-600);font-size:13px;
+}
+.pfl-select svg{color:var(--purple)}
+.pfl-list{
+  border:1.5px solid var(--gray-200);border-radius:9px;
+  margin-top:4px;overflow:hidden;
+}
+.pfl-item{
+  padding:11px 14px;display:flex;align-items:flex-start;gap:10px;
+  border-bottom:1px solid var(--gray-100);background:#fff;cursor:pointer;
+  transition:background .15s;
+}
+.pfl-item:last-child{border-bottom:none}
+.pfl-item:hover{background:var(--gray-50)}
+.pfl-item.sel{background:#f0fdf4}
+.pfl-cb{
+  width:18px;height:18px;border-radius:5px;
+  border:1.5px solid var(--gray-300);flex-shrink:0;margin-top:1px;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.pfl-item.sel .pfl-cb{background:var(--green);border-color:var(--green)}
+.pfl-name{font-size:13px;font-weight:600;color:var(--purple)}
+.pfl-tags{font-size:11px;color:var(--gray-500);margin-top:3px;line-height:1.5}
+
+/* ══════════════════════════════════════════
+   LOADING
+══════════════════════════════════════════ */
+.loading-wrap{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:18px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{
+  width:60px;height:60px;border-radius:50%;
+  border:3.5px solid var(--gray-100);border-top-color:var(--magenta);
+  animation:spin .9s linear infinite;
+}
+.loading-title{font-size:21px;font-weight:800;color:var(--magenta)}
+.loading-sub{font-size:14px;color:var(--gray-500)}
+
+/* ══════════════════════════════════════════
+   PLANO GERADO
+══════════════════════════════════════════ */
+.pg-top{padding:20px 28px 16px;border-bottom:1px solid var(--gray-100);flex-shrink:0}
+.pg-tr{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:10px}
+.pg-title{font-size:21px;font-weight:800;color:var(--gray-900);margin-bottom:9px}
+.pg-tags{display:flex;gap:6px;flex-wrap:wrap}
+.tg{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.tg-g{background:var(--gray-100);color:var(--gray-600)}
+.tg-p{background:var(--purple);color:#fff}
+.pg-acts{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-regen{
+  background:none;border:none;color:var(--purple);
+  font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;
+  font-family:'Inter',sans-serif;transition:opacity .15s;
+}
+.btn-regen:hover{opacity:.7}
+.btn-exp-grp{display:flex}
+.btn-exp{
+  border:1.5px solid var(--gray-200);background:#fff;color:var(--gray-700);
+  border-radius:9px 0 0 9px;padding:8px 14px;font-size:13px;font-weight:600;
+  cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;
+  display:flex;align-items:center;gap:5px;
+}
+.btn-exp:hover{border-color:var(--purple);color:var(--purple)}
+.btn-exp-dd{
+  border:1.5px solid var(--gray-200);border-left:none;background:#fff;
+  border-radius:0 9px 9px 0;padding:8px 10px;cursor:pointer;
+  color:var(--gray-500);transition:all .15s;display:flex;align-items:center;
+}
+.btn-exp-dd:hover{border-color:var(--purple);color:var(--purple)}
+.btn-save{
+  background:var(--purple);color:#fff;border:none;
+  border-radius:9px;padding:8px 16px;font-size:13px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;gap:7px;
+  font-family:'Inter',sans-serif;transition:background .15s;
+}
+.btn-save:hover{background:var(--purple-dark)}
+
+.pg-adapt-lbl{font-size:13px;font-weight:700;color:var(--gray-700);margin-bottom:3px}
+.pg-adapt-desc{font-size:11.5px;color:var(--gray-500);margin-bottom:10px}
+.pg-chips{display:flex;gap:7px;flex-wrap:wrap}
+.pchip{
+  border:1.5px solid var(--gray-200);border-radius:20px;
+  padding:5px 13px;font-size:12px;color:var(--gray-600);
+  cursor:pointer;display:flex;align-items:center;gap:7px;
+  transition:all .15s;background:#fff;
+}
+.pchip:hover{border-color:var(--purple);color:var(--purple)}
+.pchip svg{color:var(--purple)}
+
+.pg-body{flex:1;overflow-y:auto;padding:18px 28px 40px}
+
+.psec{border:1.5px solid var(--gray-200);border-radius:11px;overflow:hidden;margin-bottom:10px}
+.psec-hdr{
+  padding:14px 16px;display:flex;align-items:center;
+  justify-content:space-between;cursor:pointer;background:#fff;
+  user-select:none;transition:background .15s;
+}
+.psec-hdr:hover{background:var(--gray-50)}
+.psec-hdr.open{border-bottom:1px solid var(--gray-100)}
+.psec-title{
+  font-size:14px;font-weight:700;color:var(--purple);
+  display:flex;align-items:center;gap:9px;
+}
+.psec-body{
+  padding:14px 16px;background:#fff;
+  display:flex;align-items:flex-start;gap:16px;
+}
+.psec-text{flex:1;font-size:13px;color:var(--gray-700);line-height:1.65}
+.psec-text ul,.psec-text ol{padding-left:18px}
+.psec-text li{margin-bottom:5px}
+.btn-edit{
+  border:1.5px solid var(--gray-200);border-radius:8px;
+  padding:5px 14px;font-size:12px;color:var(--gray-600);
+  cursor:pointer;background:#fff;display:flex;align-items:center;gap:5px;
+  flex-shrink:0;transition:all .15s;font-family:'Inter',sans-serif;font-weight:500;
+}
+.btn-edit:hover{border-color:var(--purple);color:var(--purple)}
+
+/* Footer */
+.ft{
+  padding:11px 24px;font-size:11px;color:var(--gray-400);
+  border-top:1px solid var(--gray-100);text-align:center;flex-shrink:0;background:#fff;
+}
+
+/* ══ SVG icon helpers ══ */
+svg.ic{display:inline-block;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<div class="sidebar">
+  <div class="sb-logo"><span class="li">i</span><span class="lr">ônica</span></div>
+
+  <div class="sb-item active" onclick="goTo('home')">
+    <div class="sb-icon orange">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    </div>
+    <span class="sb-lbl">Minha iônica</span>
+  </div>
+
+  <div class="sb-item">
+    <div class="sb-icon blue">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    </div>
+    <span class="sb-lbl">Estuda.com</span>
+  </div>
+
+  <div class="sb-spacer"></div>
+  <div class="sb-sep"></div>
+
+  <div class="sb-item">
+    <div class="sb-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gray-500)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.34 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.26 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.37a16 16 0 0 0 6.13 6.13l1.66-1.47a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 15.7v1.22z"/>
+      </svg>
+    </div>
+    <span class="sb-lbl">Novidades</span>
+  </div>
+
+  <div class="sb-item">
+    <div class="sb-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gray-500)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+      </svg>
+    </div>
+    <span class="sb-lbl">Relatórios</span>
+  </div>
+
+  <div class="sb-item" style="position:relative">
+    <div class="sb-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gray-500)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span style="position:absolute;top:4px;right:4px;width:9px;height:9px;background:#F97316;border-radius:50%;border:1.5px solid #fff"></span>
+    </div>
+    <span class="sb-lbl">Notificações</span>
+  </div>
+
+  <div class="sb-item">
+    <div class="sb-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gray-500)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+    </div>
+    <span class="sb-lbl">Sair</span>
+  </div>
+
+  <div class="sb-collapse">«</div>
+</div>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="main">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="tb-menu">
+      <svg width="18" height="14" viewBox="0 0 18 14" fill="none" style="color:var(--orange)">
+        <rect width="18" height="2" rx="1" fill="currentColor"/>
+        <rect y="6" width="18" height="2" rx="1" fill="currentColor"/>
+        <rect y="12" width="18" height="2" rx="1" fill="currentColor"/>
+      </svg>
+      <span>Menu</span>
+    </div>
+    <div class="tb-center">
+      <div class="tb-school">
+        Colégio iônica
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+    </div>
+    <div class="tb-avatar">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       SCREEN: HOME
+  ════════════════════════════════════ -->
+  <div class="screen active" id="screen-home">
+    <div class="home-wrap">
+      <h1 class="home-h1">
+        <span class="p">Tudo pronto para criarmos</span><br>
+        <span class="o">algo incrível?</span>
+      </h1>
+      <p class="home-sub">Para começar, escolha o que quer fazer com a minha inteligência artificial</p>
+      <div class="home-cards">
+
+        <div class="hcard">
+          <div class="hcard-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            Buscar materiais
+          </div>
+          <p class="hcard-desc">Busque temas e encontre conteúdos, atividades e outros recursos dos seus materiais</p>
+        </div>
+
+        <div class="hcard">
+          <div class="hcard-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+            Criar questões
+          </div>
+          <p class="hcard-desc">Crie questões personalizadas por tema, componente e ano, com base nos seus materiais</p>
+        </div>
+
+        <div class="hcard" onclick="goTo('passo1')">
+          <div class="hcard-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+            Criar plano de aula
+            <span class="badge-new">Novo</span>
+          </div>
+          <p class="hcard-desc">Crie planos de aula personalizados por ano, tema, componente curricular e perfis de aprendizagem</p>
+        </div>
+
+      </div>
+    </div>
+    <div class="ft">Todos os resultados construídos aqui têm como única fonte os conteúdos elaborados por especialistas da FTD Educação. Recursos de IA podem cometer erros. Por isso, é bom checar as respostas.</div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       SCREEN: PASSO 1 — CONTEXTO
+  ════════════════════════════════════ -->
+  <div class="screen" id="screen-passo1">
+    <div class="lp-tabs">
+      <div class="lp-tab active">
+        <span class="lp-tab-plus">+</span> Novo plano de aula
+      </div>
+      <div class="lp-tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        Planos salvos
+      </div>
+      <div class="lp-tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Perfis de aprendizagem
+      </div>
+      <div class="lp-x" onclick="goTo('home')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+
+    <div class="lp-scroll">
+      <div class="lp-hrow">
+        <div class="lp-h1">
+          <span class="p">Criar</span>&nbsp;<span class="o">plano de aula</span>
+          <div class="lp-h1-q">?</div>
+        </div>
+        <div class="lp-acts">
+          <button class="btn btn-disabled" id="btn-c1">Continuar
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="step-layout">
+        <!-- Stepper -->
+        <div class="stepper">
+          <div class="step-node">
+            <div class="step-row">
+              <div class="step-circ active">1</div>
+              <div class="step-labels">
+                <div class="step-name cur">Contexto</div>
+                <div class="step-hint">Breve descrição<br>aqui (opcional)</div>
+              </div>
+            </div>
+            <div class="step-vline idle"></div>
+          </div>
+          <div class="step-node">
+            <div class="step-row">
+              <div class="step-circ idle">2</div>
+              <div class="step-labels">
+                <div class="step-name">Temática</div>
+                <div class="step-hint">Breve descrição<br>aqui (opcional)</div>
+              </div>
+            </div>
+            <div class="step-vline idle"></div>
+          </div>
+          <div class="step-node">
+            <div class="step-row">
+              <div class="step-circ idle">3</div>
+              <div class="step-labels">
+                <div class="step-name">Adaptações</div>
+                <div class="step-hint">Breve descrição<br>aqui (opcional)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="sc">
+          <div class="sc-top">
+            <div class="sc-title">Contexto da aula</div>
+            <div class="sc-req">* Campos com asterisco são obrigatórios</div>
+          </div>
+
+          <div class="card-opt" id="co-vincular" onclick="toggleCO('co-vincular')">
+            <div class="card-opt-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+              </svg>
+            </div>
+            <div class="card-opt-body">
+              <div class="card-opt-title">Vincular a um plano de aula anterior</div>
+              <div class="card-opt-desc">Opcional: Importe a turma, disciplina e contexto de uma aula já gerada para continuar o assunto.</div>
+            </div>
+            <div class="radio-ring"><div class="radio-inner"></div></div>
+          </div>
+
+          <!-- Ano / Série -->
+          <div class="acc">
+            <div class="acc-hdr open" id="hdr-ano" onclick="toggleAcc('hdr-ano','body-ano')">
+              <div class="acc-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                Ano / Série*
+              </div>
+              <div class="acc-right">
+                <span class="acc-sel-badge" id="ano-badge" style="display:none"></span>
+                <span class="chevron up" id="chv-ano">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </span>
+              </div>
+            </div>
+            <div class="acc-body open" id="body-ano">
+              <div class="rg-label">Ensino Fundamental</div>
+              <div class="rg-row" style="margin-bottom:16px">
+                <label class="rl"><input type="radio" name="ano" value="1º Ano EF" onchange="onAnoChange(this)"> 1º Ano</label>
+                <label class="rl"><input type="radio" name="ano" value="2º Ano EF" onchange="onAnoChange(this)"> 2º Ano</label>
+                <label class="rl"><input type="radio" name="ano" value="3º Ano EF" onchange="onAnoChange(this)"> 3º Ano</label>
+                <label class="rl"><input type="radio" name="ano" value="4º Ano EF" onchange="onAnoChange(this)"> 4º Ano</label>
+                <label class="rl"><input type="radio" name="ano" value="5º Ano EF" onchange="onAnoChange(this)"> 5º Ano</label>
+                <label class="rl"><input type="radio" name="ano" value="6º Ano EF" onchange="onAnoChange(this)"> 6º Ano</label>
+                <label class="rl"><input type="radio" name="ano" value="7º Ano EF" onchange="onAnoChange(this)"> 7º Ano</label>
+                <label class="rl"><input type="radio" name="ano" value="8º Ano EF" onchange="onAnoChange(this)"> 8º Ano</label>
+                <label class="rl"><input type="radio" name="ano" value="9º Ano EF" onchange="onAnoChange(this)"> 9º Ano</label>
+              </div>
+              <div class="rg-label">Ensino Médio</div>
+              <div class="rg-row">
+                <label class="rl"><input type="radio" name="ano" value="1º Ano EM" onchange="onAnoChange(this)"> 1º Ano</label>
+                <label class="rl"><input type="radio" name="ano" value="2º Ano EM" onchange="onAnoChange(this)"> 2º Ano</label>
+                <label class="rl"><input type="radio" name="ano" value="3º Ano EM" onchange="onAnoChange(this)"> 3º Ano</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Componente curricular -->
+          <div class="acc">
+            <div class="acc-hdr" id="hdr-comp" onclick="toggleAcc('hdr-comp','body-comp')">
+              <div class="acc-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+                Componente curricular*
+              </div>
+              <div class="acc-right">
+                <span class="chevron" id="chv-comp">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </span>
+              </div>
+            </div>
+            <div class="acc-body" id="body-comp">
+              <div class="rg-row">
+                <label class="rl"><input type="radio" name="comp" onchange="checkP1()"> Ciências</label>
+                <label class="rl"><input type="radio" name="comp" onchange="checkP1()"> Matemática</label>
+                <label class="rl"><input type="radio" name="comp" onchange="checkP1()"> Língua Portuguesa</label>
+                <label class="rl"><input type="radio" name="comp" onchange="checkP1()"> História</label>
+                <label class="rl"><input type="radio" name="comp" onchange="checkP1()"> Geografia</label>
+                <label class="rl"><input type="radio" name="comp" onchange="checkP1()"> Arte</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Qtd + Tempo -->
+          <div class="frow">
+            <div class="ffield">
+              <label class="flabel">Qtd. de aulas*</label>
+              <div class="finput">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <input type="number" placeholder="Ex.: 2 aulas" min="1" max="20" onchange="checkP1()">
+              </div>
+            </div>
+            <div class="ffield">
+              <label class="flabel">Tempo da aula (min.)*</label>
+              <div class="finput">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+                <input type="number" placeholder="Ex.: 60 minutos" min="15" max="300" onchange="checkP1()">
+              </div>
+            </div>
+          </div>
+          <div class="fhint">Se a aula dura 30 minutos e você quer trabalhar o tema em 2 aulas, a IA estrutura um roteiro de 60 minutos, organizando dinâmicas e explicações.</div>
+        </div>
+      </div>
+    </div>
+    <div class="ft">Todos os resultados construídos aqui têm como única fonte os conteúdos elaborados por especialistas da FTD Educação. Recursos de IA podem cometer erros. Por isso, é bom checar as respostas.</div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       SCREEN: PASSO 2 — TEMÁTICA
+  ════════════════════════════════════ -->
+  <div class="screen" id="screen-passo2">
+    <div class="lp-tabs">
+      <div class="lp-tab active"><span class="lp-tab-plus">+</span> Novo plano de aula</div>
+      <div class="lp-tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        Planos salvos
+      </div>
+      <div class="lp-tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Perfis de aprendizagem
+      </div>
+      <div class="lp-x" onclick="goTo('home')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+
+    <div class="lp-scroll">
+      <div class="lp-hrow">
+        <div class="lp-h1">
+          <span class="p">Criar</span>&nbsp;<span class="o">plano de aula</span>
+          <div class="lp-h1-q">?</div>
+        </div>
+        <div class="lp-acts">
+          <button class="btn-ghost" onclick="goTo('passo1')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Voltar
+          </button>
+          <button class="btn btn-disabled" id="btn-c2">Continuar
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="step-layout">
+        <div class="stepper">
+          <div class="step-node">
+            <div class="step-row">
+              <div class="step-circ done">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="step-labels">
+                <div class="step-name">Contexto</div>
+                <div class="step-hint">Breve descrição<br>aqui (opcional)</div>
+              </div>
+            </div>
+            <div class="step-vline done"></div>
+          </div>
+          <div class="step-node">
+            <div class="step-row">
+              <div class="step-circ active">2</div>
+              <div class="step-labels">
+                <div class="step-name cur">Temática</div>
+                <div class="step-hint">Breve descrição<br>aqui (opcional)</div>
+              </div>
+            </div>
+            <div class="step-vline idle"></div>
+          </div>
+          <div class="step-node">
+            <div class="step-row">
+              <div class="step-circ idle">3</div>
+              <div class="step-labels">
+                <div class="step-name">Adaptações</div>
+                <div class="step-hint">Breve descrição<br>aqui (opcional)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sc">
+          <div class="sc-top">
+            <div class="sc-title">Temática</div>
+            <div class="sc-req">* Campos com asterisco são obrigatórios</div>
+          </div>
+
+          <label class="flabel">Tema da aula*</label>
+          <div class="tema-box">
+            <input type="text" id="tema-in" placeholder="Ex.: Ciclo da Água" oninput="checkP2()">
+            <span class="tema-clear" id="tema-clear" onclick="clearTema()" style="display:none">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </span>
+          </div>
+          <p class="tema-hint">Descreva o tema da aula ou escolha entre as sugestões a baixo</p>
+
+          <div class="suggs">
+            <div class="sug" id="sug-0" onclick="pickSug('Fotossíntese',0)">
+              <div class="sug-t">Fotossíntese</div>
+              <div class="sug-d">Sugestão dada com base no ano e disciplina</div>
+            </div>
+            <div class="sug" id="sug-1" onclick="pickSug('Sugestão 2',1)">
+              <div class="sug-t">Sugestão 2</div>
+              <div class="sug-d">Sugestão dada com base no ano e disciplina</div>
+            </div>
+            <div class="sug" id="sug-2" onclick="pickSug('Sugestão 3',2)">
+              <div class="sug-t">Sugestão 3</div>
+              <div class="sug-d">Sugestão dada com base no ano e disciplina</div>
+            </div>
+          </div>
+
+          <!-- BNCC -->
+          <div class="acc">
+            <div class="acc-hdr" id="hdr-bncc" onclick="toggleAcc('hdr-bncc','body-bncc')">
+              <div class="acc-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                Habilidades BNCC
+                <span class="badge-opt">opcional</span>
+              </div>
+              <div class="acc-right">
+                <span class="acc-count" id="bncc-ct">0/3 selecionadas</span>
+                <span class="chevron" id="chv-bncc">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </span>
+              </div>
+            </div>
+            <div class="acc-body" id="body-bncc">
+              <div class="rg-row">
+                <label class="rl"><input type="checkbox" onchange="countBncc()"> EM13LGG100</label>
+                <label class="rl"><input type="checkbox" onchange="countBncc()"> EM13LGG101</label>
+                <label class="rl"><input type="checkbox" onchange="countBncc()"> EM13LGG102</label>
+                <label class="rl"><input type="checkbox" onchange="countBncc()"> EM13LGG103</label>
+                <label class="rl"><input type="checkbox" onchange="countBncc()"> EF01CI01</label>
+                <label class="rl"><input type="checkbox" onchange="countBncc()"> EF05CI04</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Importar base -->
+          <div style="margin-top:18px">
+            <div class="flabel" style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+              Importar base <span class="badge-opt">opcional</span>
+            </div>
+            <div class="upload">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--purple);display:block;margin:0 auto 10px">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="12" y1="18" x2="12" y2="12"/>
+                <polyline points="9 15 12 12 15 15"/>
+              </svg>
+              <div class="upload-txt">Arraste e solte os arquivos aqui ou</div>
+              <button class="upload-btn">Selecione</button>
+              <div class="upload-meta">Tamanho máximo: 10MB<br>Arquivos permitidos: PDF, PNG e JPEG</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ft">Todos os resultados construídos aqui têm como única fonte os conteúdos elaborados por especialistas da FTD Educação. Recursos de IA podem cometer erros. Por isso, é bom checar as respostas.</div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       SCREEN: PASSO 3 — ADAPTAÇÕES
+  ════════════════════════════════════ -->
+  <div class="screen" id="screen-passo3">
+    <div class="lp-tabs">
+      <div class="lp-tab active"><span class="lp-tab-plus">+</span> Novo plano de aula</div>
+      <div class="lp-tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        Planos salvos
+      </div>
+      <div class="lp-tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Perfis de aprendizagem
+      </div>
+      <div class="lp-x" onclick="goTo('home')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+
+    <div class="lp-scroll">
+      <div class="lp-hrow">
+        <div class="lp-h1">
+          <span class="p">Criar</span>&nbsp;<span class="o">plano de aula</span>
+          <div class="lp-h1-q">?</div>
+        </div>
+        <div class="lp-acts">
+          <button class="btn-ghost" onclick="goTo('passo2')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Voltar
+          </button>
+          <button class="btn btn-primary" onclick="goTo('loading')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            Criar plano de aula
+          </button>
+        </div>
+      </div>
+
+      <div class="step-layout">
+        <div class="stepper">
+          <div class="step-node">
+            <div class="step-row">
+              <div class="step-circ done">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="step-labels">
+                <div class="step-name">Contexto</div>
+                <div class="step-hint">Breve descrição<br>aqui (opcional)</div>
+              </div>
+            </div>
+            <div class="step-vline done"></div>
+          </div>
+          <div class="step-node">
+            <div class="step-row">
+              <div class="step-circ done">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="step-labels">
+                <div class="step-name">Temática</div>
+                <div class="step-hint">Breve descrição<br>aqui (opcional)</div>
+              </div>
+            </div>
+            <div class="step-vline done"></div>
+          </div>
+          <div class="step-node">
+            <div class="step-row">
+              <div class="step-circ active">3</div>
+              <div class="step-labels">
+                <div class="step-name cur">Adaptações</div>
+                <div class="step-hint">Breve descrição<br>aqui (opcional)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sc">
+          <div class="sc-top">
+            <div class="sc-title">Adaptações</div>
+            <div class="sc-req">* Campos com asterisco são obrigatórios</div>
+          </div>
+
+          <!-- Toggle: Criar plano inclusivo -->
+          <div class="tog-card on" id="tog-inc" onclick="flipTog()">
+            <div class="tog-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <div class="tog-body">
+              <div class="tog-title">Criar plano inclusivo</div>
+              <div class="tog-desc">Crie adaptações pedagógicas personalizadas para diferentes perfis de aprendizagem</div>
+            </div>
+            <div class="tog-dot" id="tog-dot" style="background:var(--green)"></div>
+          </div>
+
+          <!-- Perfis de aprendizagem (shown when toggle is on) -->
+          <div class="pfl-section show" id="pfl-section">
+            <div class="flabel">Perfis de aprendizagem*</div>
+            <div class="pfl-select" onclick="togglePflList()">
+              <span>Selecione</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+            </div>
+            <div class="pfl-list" id="pfl-list">
+              <div class="pfl-item sel" onclick="togglePfl(this)">
+                <div class="pfl-cb">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <div class="pfl-name">Alunos com transtorno do déficit de atenção (TDAH)</div>
+                  <div class="pfl-tags">Necessita de apoio frente a desafios novos · Necessita de apoio para manter a atenção · Necessita de apoio visual e/ou concreto…</div>
+                </div>
+              </div>
+              <div class="pfl-item" onclick="togglePfl(this)">
+                <div class="pfl-cb"></div>
+                <div>
+                  <div class="pfl-name">Alunos com transtorno do espectro autista (TEA)</div>
+                  <div class="pfl-tags">Necessita de rotina clara · Sensibilidade sensorial · Pode necessitar de suporte na comunicação social…</div>
+                </div>
+              </div>
+              <div class="pfl-item" onclick="togglePfl(this)">
+                <div class="pfl-cb"></div>
+                <div>
+                  <div class="pfl-name">Alunos com dificuldades motoras</div>
+                  <div class="pfl-tags">Necessita de adaptações físicas · Pode necesitar de suporte para escrita · Recursos alternativos de expressão…</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recursos -->
+          <div class="acc">
+            <div class="acc-hdr" id="hdr-rec" onclick="toggleAcc('hdr-rec','body-rec')">
+              <div class="acc-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                </svg>
+                Recursos
+                <span class="badge-opt">opcional</span>
+              </div>
+              <div class="acc-right">
+                <span class="acc-count">0/3 selecionadas</span>
+                <span class="chevron" id="chv-rec">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </span>
+              </div>
+            </div>
+            <div class="acc-body" id="body-rec">
+              <div class="rg-row">
+                <label class="rl"><input type="checkbox"> Vídeo educativo</label>
+                <label class="rl"><input type="checkbox"> Atividade impressa</label>
+                <label class="rl"><input type="checkbox"> Apresentação digital</label>
+                <label class="rl"><input type="checkbox"> Jogo pedagógico</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ft">Todos os resultados construídos aqui têm como única fonte os conteúdos elaborados por especialistas da FTD Educação. Recursos de IA podem cometer erros. Por isso, é bom checar as respostas.</div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       SCREEN: LOADING
+  ════════════════════════════════════ -->
+  <div class="screen" id="screen-loading">
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <div class="loading-title">Construindo seu plano de aula</div>
+      <div class="loading-sub">Gerando adaptações inclusivas...</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       SCREEN: PLANO GERADO
+  ════════════════════════════════════ -->
+  <div class="screen" id="screen-plano">
+    <div class="lp-tabs">
+      <div class="lp-tab active"><span class="lp-tab-plus">+</span> Novo plano de aula</div>
+      <div class="lp-tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        Planos salvos
+      </div>
+      <div class="lp-tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Perfis de aprendizagem
+      </div>
+      <div class="lp-x" onclick="goTo('home')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+
+    <div class="pg-top">
+      <div class="pg-tr">
+        <div>
+          <div class="pg-title">Continuação: Introdução à Fotossíntese</div>
+          <div class="pg-tags">
+            <span class="tg tg-g">1º Ano EF</span>
+            <span class="tg tg-g">Ciências</span>
+            <span class="tg tg-p">EM13LGG100</span>
+            <span class="tg tg-p">EM13LGG101</span>
+            <span class="tg tg-p">EM13LGG102</span>
+          </div>
+        </div>
+        <div class="pg-acts">
+          <button class="btn-regen">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+            Gerar novamente
+          </button>
+          <div class="btn-exp-grp">
+            <button class="btn-exp">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Exportar
+            </button>
+            <button class="btn-exp-dd">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <button class="btn-save">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+            Salvar plano
+          </button>
+        </div>
+      </div>
+      <div class="pg-adapt-lbl">Adaptações ativas no plano</div>
+      <div class="pg-adapt-desc">Selecione os perfis aprendizagem para visualizar as respectivas adaptações no plano de aula</div>
+      <div class="pg-chips">
+        <div class="pchip">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Alunos com transtorno do déficit de aten...
+        </div>
+        <div class="pchip">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Alunos com transtorno do espectro autista...
+        </div>
+        <div class="pchip">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Perfil 1
+        </div>
+        <div class="pchip">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Alunos com dificuldades motoras
+        </div>
+      </div>
+    </div>
+
+    <div class="pg-body">
+
+      <div class="psec">
+        <div class="psec-hdr open" onclick="togglePSec(this)">
+          <div class="psec-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            Tema/Conteúdo da aula
+          </div>
+          <span class="chevron up"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+        <div class="psec-body">
+          <div class="psec-text">Compreensão da etapa química da fotossíntese, conhecida como Ciclo de Calvin ou fase escura, detalhando a fixação do carbono e a produção de glicose.</div>
+          <button class="btn-edit">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Editar
+          </button>
+        </div>
+      </div>
+
+      <div class="psec">
+        <div class="psec-hdr open" onclick="togglePSec(this)">
+          <div class="psec-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Duração estimada
+          </div>
+          <span class="chevron up"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+        <div class="psec-body">
+          <div class="psec-text">2 aulas (100 minutos no total)</div>
+          <button class="btn-edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+        </div>
+      </div>
+
+      <div class="psec">
+        <div class="psec-hdr open" onclick="togglePSec(this)">
+          <div class="psec-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Conteúdo programático</div>
+          <span class="chevron up"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+        <div class="psec-body">
+          <div class="psec-text">
+            <ul>
+              <li>Revisão da fase luminosa (produção de ATP e NADPH)</li>
+              <li>Localização do Ciclo de Calvin (estroma do cloroplasto)</li>
+              <li>Fases do ciclo: Fixação, Redução e Regeneração da RuBP</li>
+              <li>O papel da enzima Rubisco</li>
+              <li>Equação geral da produção de glicose</li>
+            </ul>
+          </div>
+          <button class="btn-edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+        </div>
+      </div>
+
+      <div class="psec">
+        <div class="psec-hdr open" onclick="togglePSec(this)">
+          <div class="psec-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Metodologia</div>
+          <span class="chevron up"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+        <div class="psec-body">
+          <div class="psec-text">Aula baseada em metodologias ativas, iniciando com uma <strong>Exposição Dialogada</strong> utilizando recursos visuais (diagramas do cloroplasto), seguida de <strong>Aprendizagem Baseada em Projetos (PBL) em microescala</strong>, onde os alunos construirão modelos moleculares.</div>
+          <button class="btn-edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+        </div>
+      </div>
+
+      <div class="psec">
+        <div class="psec-hdr open" onclick="togglePSec(this)">
+          <div class="psec-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Aulas e sequências didáticas</div>
+          <span class="chevron up"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+        <div class="psec-body">
+          <div class="psec-text">
+            <ol>
+              <li>Retomada (15 min): Perguntas rápidas sobre a aula anterior</li>
+              <li>Exposição (25 min): Apresentação do Ciclo de Calvin passo a passo na lousa digital</li>
+              <li>Prática Gamificada (40 min): Atividade "Fábrica de Glicose"</li>
+              <li>Sistematização (20 min): Construção de um mapa mental coletivo</li>
+            </ol>
+          </div>
+          <button class="btn-edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+        </div>
+      </div>
+
+      <div class="psec">
+        <div class="psec-hdr open" onclick="togglePSec(this)">
+          <div class="psec-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Avaliações</div>
+          <span class="chevron up"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+        <div class="psec-body">
+          <div class="psec-text">Avaliação formativa durante a prática gamificada (observação da colaboração e compreensão do fluxo molecular) e um <strong>Ticket de Saída</strong> escrito.</div>
+          <button class="btn-edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+        </div>
+      </div>
+
+      <div class="psec">
+        <div class="psec-hdr open" onclick="togglePSec(this)">
+          <div class="psec-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Recursos</div>
+          <span class="chevron up"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+        <div class="psec-body">
+          <div class="psec-text">
+            <ul>
+              <li>Lousa digital ou Projetor multimídia</li>
+              <li>Kits de montagem molecular</li>
+              <li>Fichas impressas com as etapas</li>
+            </ul>
+          </div>
+          <button class="btn-edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+        </div>
+      </div>
+
+    </div>
+    <div class="ft">Todos os resultados construídos aqui têm como única fonte os conteúdos elaborados por especialistas da FTD Educação. Recursos de IA podem cometer erros. Por isso, é bom checar as respostas.</div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+let loadTimer = null;
+
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(s => s.classList.remove('active'));
+  document.querySelector('.sb-item').classList.add('active');
+  if (id === 'loading') {
+    clearTimeout(loadTimer);
+    loadTimer = setTimeout(() => goTo('plano'), 3200);
+  }
+}
+
+// ── Accordion ──────────────────────────────
+function toggleAcc(hdrId, bodyId) {
+  const hdr  = document.getElementById(hdrId);
+  const body = document.getElementById(bodyId);
+  const chv  = document.getElementById('chv-' + bodyId.replace('body-',''));
+  const open = body.classList.contains('open');
+  body.classList.toggle('open', !open);
+  hdr.classList.toggle('open', !open);
+  if (chv) chv.classList.toggle('up', !open);
+}
+
+// ── Card option toggle ─────────────────────
+function toggleCO(id) {
+  document.getElementById(id).classList.toggle('sel');
+}
+
+// ── Step 1 — radio Ano ──────────────────────
+function onAnoChange(input) {
+  const badge = document.getElementById('ano-badge');
+  badge.textContent = input.value;
+  badge.style.display = 'inline-flex';
+  checkP1();
+}
+function checkP1() {
+  const ano = document.querySelector('input[name="ano"]:checked');
+  setBtn('btn-c1', !!ano, () => goTo('passo2'));
+}
+function setBtn(id, enabled, action) {
+  const btn = document.getElementById(id);
+  if (!btn) return;
+  if (enabled) {
+    btn.className = 'btn btn-outline';
+    btn.onclick = action;
+  } else {
+    btn.className = 'btn btn-disabled';
+    btn.onclick = null;
+  }
+}
+
+// ── Step 2 — tema ──────────────────────────
+function checkP2() {
+  const val = document.getElementById('tema-in').value.trim();
+  document.getElementById('tema-clear').style.display = val ? 'flex' : 'none';
+  // highlight selected suggestion
+  document.querySelectorAll('.sug').forEach(s => s.classList.remove('sel'));
+  setBtn('btn-c2', val.length > 0, () => goTo('passo3'));
+}
+function clearTema() {
+  document.getElementById('tema-in').value = '';
+  document.getElementById('tema-clear').style.display = 'none';
+  document.querySelectorAll('.sug').forEach(s => s.classList.remove('sel'));
+  setBtn('btn-c2', false, null);
+}
+function pickSug(val, idx) {
+  document.getElementById('tema-in').value = val;
+  document.querySelectorAll('.sug').forEach((s, i) => s.classList.toggle('sel', i === idx));
+  document.getElementById('tema-clear').style.display = 'flex';
+  setBtn('btn-c2', true, () => goTo('passo3'));
+}
+
+// ── BNCC count ─────────────────────────────
+function countBncc() {
+  const n = document.querySelectorAll('#body-bncc input:checked').length;
+  document.getElementById('bncc-ct').textContent = n + '/3 selecionadas';
+}
+
+// ── Toggle: Criar plano inclusivo ──────────
+function flipTog() {
+  const card = document.getElementById('tog-inc');
+  const dot  = document.getElementById('tog-dot');
+  const pfl  = document.getElementById('pfl-section');
+  card.classList.toggle('on');
+  const on = card.classList.contains('on');
+  dot.style.background = on ? 'var(--green)' : 'var(--gray-300)';
+  pfl.classList.toggle('show', on);
+}
+
+// ── Perfis list toggle ─────────────────────
+function togglePflList() {
+  const list = document.getElementById('pfl-list');
+  list.style.display = list.style.display === 'none' ? 'block' : 'none';
+}
+function togglePfl(item) {
+  item.classList.toggle('sel');
+  const cb = item.querySelector('.pfl-cb');
+  if (item.classList.contains('sel')) {
+    cb.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  } else {
+    cb.innerHTML = '';
+  }
+}
+
+// ── Plano section collapse ─────────────────
+function togglePSec(hdr) {
+  const body   = hdr.nextElementSibling;
+  const chevron = hdr.querySelector('.chevron');
+  const open   = hdr.classList.contains('open');
+  hdr.classList.toggle('open', !open);
+  body.style.display = open ? 'none' : 'flex';
+  if (chevron) chevron.classList.toggle('up', !open);
+}
+</script>
+</body>
+</html>
