@@ -91,9 +91,9 @@ interface LessonPlanFlowProps {
 }
 
 const STEP_LABELS = [
-  { num: 1, label: 'Contexto', hint: 'Breve descrição \naqui (opcional)' },
-  { num: 2, label: 'Temática', hint: 'Breve descrição \naqui (opcional)' },
-  { num: 3, label: 'Adaptações', hint: 'Breve descrição \naqui (opcional)' },
+  { num: 1, label: 'Contexto', hint: 'Turma, disciplina\ne duração' },
+  { num: 2, label: 'Temática', hint: 'Tema e habilidade\nBNCC' },
+  { num: 3, label: 'Adaptações', hint: 'Inclusão e\nrecursos' },
 ];
 
 // Checkmark SVG path do Figma
@@ -182,10 +182,18 @@ function StepIndicator({ step }: { step: FlowStep }) {
 
 /* ── History & Saved types ─────────────────────────────────────────────────── */
 
+interface PlanTags {
+  year: string;
+  subject: string;
+  bnccSkills: string[];
+  adapted: boolean;
+}
+
 interface HistoryItem {
   id: string;
   date: string;
   title: string;
+  tags: PlanTags;
   isNew?: boolean;
   snapshot?: PlanoFormData;
 }
@@ -194,19 +202,140 @@ interface SavedPlan {
   id: string;
   date: string;
   title: string;
+  tags: PlanTags;
   isNew?: boolean;
   snapshot?: PlanoFormData;
 }
 
+const DEFAULT_TAGS: PlanTags = {
+  year: '1º Ano – Ensino Fundamental',
+  subject: 'Ciências',
+  bnccSkills: ['EM13LGG100', 'EM13LGG101', 'EM13LGG102'],
+  adapted: true,
+};
+
 const MOCK_HISTORY: HistoryItem[] = [
-  { id: '1', date: '08/04 às 17:46', title: 'Atividades educativas sobre a queda do Muro de Berlim' },
-  { id: '2', date: '08/04 às 15:26', title: 'Atividades Educativas sobre a Guerra do Paraguai' },
+  { id: '1', date: '20/05 às 17:46', title: 'Introdução á Fotossíntese', tags: DEFAULT_TAGS },
+  { id: '2', date: '20/05 às 17:46', title: 'O Ciclo da Água', tags: DEFAULT_TAGS },
+  { id: '3', date: '20/05 às 17:46', title: 'Cadeia Alimentar', tags: DEFAULT_TAGS },
 ];
 
 const MOCK_SAVED: SavedPlan[] = [
-  { id: '1', date: '08/04 às 17:46', title: 'Atividades educativas sobre a queda do Muro de Berlim' },
-  { id: '2', date: '08/04 às 15:26', title: 'Atividades Educativas sobre a Guerra do Paraguai' },
+  { id: '1', date: '20/05 às 17:46', title: 'Introdução á Fotossíntese', tags: DEFAULT_TAGS },
+  { id: '2', date: '20/05 às 17:46', title: 'O Ciclo da Água', tags: DEFAULT_TAGS },
+  { id: '3', date: '20/05 às 17:46', title: 'Cadeia Alimentar', tags: DEFAULT_TAGS },
 ];
+
+/* ── Plan tags component ─────────────────────────────────────────────────── */
+
+function PlanTagList({ tags }: { tags: PlanTags }) {
+  return (
+    <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+      {/* Year tag */}
+      <span
+        style={{
+          fontFamily: 'Plus Jakarta Sans, sans-serif',
+          fontSize: 12,
+          fontWeight: 500,
+          color: '#494150',
+          background: '#fff',
+          border: '1px solid #D3CADB',
+          borderRadius: 4,
+          padding: '2px 8px',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {tags.year}
+      </span>
+      {/* Subject tag */}
+      <span
+        style={{
+          fontFamily: 'Plus Jakarta Sans, sans-serif',
+          fontSize: 12,
+          fontWeight: 500,
+          color: '#494150',
+          background: '#fff',
+          border: '1px solid #D3CADB',
+          borderRadius: 4,
+          padding: '2px 8px',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {tags.subject}
+      </span>
+      {/* BNCC skill tags */}
+      {tags.bnccSkills.map((skill) => (
+        <span
+          key={skill}
+          style={{
+            fontFamily: 'Plus Jakarta Sans, sans-serif',
+            fontSize: 12,
+            fontWeight: 600,
+            color: '#8600F4',
+            background: '#F4E8FE',
+            border: '1px solid #D3CADB',
+            borderRadius: 4,
+            padding: '2px 8px',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {skill}
+        </span>
+      ))}
+      {/* Adapted tag */}
+      {tags.adapted && (
+        <span
+          style={{
+            fontFamily: 'Plus Jakarta Sans, sans-serif',
+            fontSize: 12,
+            fontWeight: 500,
+            color: '#494150',
+            background: '#fff',
+            border: '1px solid #D3CADB',
+            borderRadius: 4,
+            padding: '2px 8px',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          Adaptado
+        </span>
+      )}
+    </div>
+  );
+}
+
+/* ── Search bar ──────────────────────────────────────────────────────────── */
+
+function SearchBar({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <div
+      className="flex items-center gap-2 px-4 mb-4"
+      style={{
+        height: 44,
+        border: '1px solid #D3CADB',
+        borderRadius: 100,
+        background: '#fff',
+      }}
+    >
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+        <path d="M7 13C10.3137 13 13 10.3137 13 7C13 3.68629 10.3137 1 7 1C3.68629 1 1 3.68629 1 7C1 10.3137 3.68629 13 7 13Z" stroke="#A096A9" strokeWidth="1.4" />
+        <path d="M11.5 11.5L15 15" stroke="#A096A9" strokeWidth="1.4" strokeLinecap="round" />
+      </svg>
+      <input
+        type="text"
+        placeholder="Buscar"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="flex-1 outline-none bg-transparent"
+        style={{
+          fontFamily: 'Plus Jakarta Sans, sans-serif',
+          fontSize: 14,
+          color: '#0D0712',
+        }}
+      />
+    </div>
+  );
+}
 
 /* ── Characteristics & Icon paths ─────────────────────────────────────────── */
 
@@ -321,61 +450,121 @@ function ItemMenu({ actions }: { actions: MenuAction[] }) {
   );
 }
 
-/* ── View plan modal ──────────────────────────────────────────────────────── */
+/* ── Full-screen plan view (from History / Saved) ────────────────────────── */
 
-function ViewPlanModal({ item, onClose }: { item: HistoryItem | SavedPlan; onClose: () => void }) {
-  const mockFormData: PlanoFormData = item.snapshot ?? {
-    year: '1º Ano EF',
-    subject: 'História',
+function PlanFullScreenView({
+  item,
+  onBack,
+  onRegenerate,
+  onSave,
+}: {
+  item: HistoryItem | SavedPlan;
+  onBack: () => void;
+  onRegenerate?: () => void;
+  onSave?: () => void;
+}) {
+  const formData: PlanoFormData = item.snapshot ?? {
+    year: item.tags.year,
+    subject: item.tags.subject,
     numLessons: '2',
     lessonTime: '50',
     topic: item.title,
-    bnccSkills: [],
-    inclusivePlan: false,
+    bnccSkills: item.tags.bnccSkills,
+    inclusivePlan: item.tags.adapted,
     resources: [],
     linkedPlan: null,
     selectedProfiles: [],
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ background: 'rgba(13,7,18,0.55)' }}
-      onClick={onClose}
-    >
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+      {/* Plan header bar */}
       <div
-        className="flex flex-col rounded-2xl overflow-hidden"
-        style={{
-          width: 900,
-          maxWidth: '95vw',
-          height: '86vh',
-          background: '#fff',
-          boxShadow: '0 8px 32px rgba(13,7,18,0.18)',
-        }}
-        onClick={(e) => e.stopPropagation()}
+        className="flex items-center gap-4 shrink-0 px-7 py-3"
+        style={{ borderBottom: '1px solid #E7DFEE' }}
       >
-        {/* Modal header */}
-        <div
-          className="flex items-center justify-between shrink-0 px-6 py-3"
-          style={{ borderBottom: '1px solid #E7DFEE' }}
+        {/* Back button */}
+        <button
+          onClick={onBack}
+          className="flex items-center gap-1.5 shrink-0 border-0 bg-transparent cursor-pointer"
+          style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 600, color: '#8600F4' }}
         >
-          <p style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, fontSize: 16, color: '#0D0712', margin: 0 }}>
-            Visualizar plano de aula
-          </p>
+          <svg width="16" height="14" viewBox="0 0 16 14" fill="none">
+            <path d="M14 7H2M2 7L7 2M2 7L7 12" stroke="#8600F4" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Voltar
+        </button>
+        {/* Tags */}
+        <div className="flex flex-wrap items-center gap-1.5 flex-1">
+          <PlanTagList tags={item.tags} />
+        </div>
+        {/* Action buttons */}
+        <div className="flex items-center gap-2 shrink-0">
+          {onRegenerate && (
+            <button
+              onClick={onRegenerate}
+              className="flex items-center gap-1.5 border-0 cursor-pointer px-4"
+              style={{
+                height: 36,
+                background: '#fff',
+                border: '1.5px solid #D3CADB',
+                borderRadius: 8,
+                fontFamily: 'Plus Jakarta Sans, sans-serif',
+                fontSize: 13,
+                fontWeight: 600,
+                color: '#494150',
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M1 7C1 3.69 3.69 1 7 1C9.09 1 10.93 2.05 12 3.65V1M12 7C12 10.31 9.31 13 6 13C3.91 13 2.07 11.95 1 10.35V13" stroke="#494150" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Gerar novamente
+            </button>
+          )}
           <button
-            onClick={onClose}
-            className="flex items-center justify-center border-0 bg-transparent cursor-pointer rounded-lg hover:bg-[#F6F0FB] transition-colors"
-            style={{ width: 32, height: 32 }}
+            className="flex items-center gap-1.5 border-0 cursor-pointer px-4"
+            style={{
+              height: 36,
+              background: '#fff',
+              border: '1.5px solid #D3CADB',
+              borderRadius: 8,
+              fontFamily: 'Plus Jakarta Sans, sans-serif',
+              fontSize: 13,
+              fontWeight: 600,
+              color: '#494150',
+            }}
           >
-            <svg width="14" height="14" viewBox="0 0 14.17 14.17" fill="none">
-              <path d={ICON_CLOSE} fill="#494150" />
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M7 1V9M7 9L4 6M7 9L10 6" stroke="#494150" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M1 10V12C1 12.55 1.45 13 2 13H12C12.55 13 13 12.55 13 12V10" stroke="#494150" strokeWidth="1.3" strokeLinecap="round" />
             </svg>
+            Exportar
           </button>
+          {onSave && (
+            <button
+              onClick={onSave}
+              className="flex items-center gap-1.5 border-0 cursor-pointer px-4"
+              style={{
+                height: 36,
+                background: '#8600F4',
+                borderRadius: 8,
+                fontFamily: 'Plus Jakarta Sans, sans-serif',
+                fontSize: 13,
+                fontWeight: 600,
+                color: '#fff',
+              }}
+            >
+              <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
+                <path d="M1 2C1 1.45 1.45 1 2 1H10C10.55 1 11 1.45 11 2V13L6 10.5L1 13V2Z" stroke="#fff" strokeWidth="1.3" strokeLinejoin="round" />
+              </svg>
+              Salvar
+            </button>
+          )}
         </div>
-        {/* Plan content */}
-        <div className="flex flex-1 min-h-0 overflow-hidden">
-          <PlanoGerado formData={mockFormData} onRegenerate={onClose} />
-        </div>
+      </div>
+      {/* Plan content */}
+      <div className="flex flex-1 min-h-0 overflow-hidden">
+        <PlanoGerado formData={formData} onRegenerate={onRegenerate ?? (() => {})} />
       </div>
     </div>
   );
@@ -594,9 +783,12 @@ function CreateProfileModal({ onClose, onSave, initialProfile }: CreateProfileMo
 interface ProfilesTabProps {
   formData: FormData;
   onChange: (data: Partial<FormData>) => void;
+  profileSearch: string;
+  setProfileSearch: (v: string) => void;
+  filteredProfiles: LearningProfile[];
 }
 
-function ProfilesTab({ formData, onChange }: ProfilesTabProps) {
+function ProfilesTab({ formData, onChange, profileSearch, setProfileSearch, filteredProfiles }: ProfilesTabProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingProfile, setEditingProfile] = useState<LearningProfile | null>(null);
 
@@ -622,73 +814,89 @@ function ProfilesTab({ formData, onChange }: ProfilesTabProps) {
     <>
       <div className="flex flex-col flex-1 overflow-y-auto px-7 py-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 400, fontSize: 20, color: '#0d0712', margin: 0 }}>
-            Perfis de aprendizagem salvos
-          </h2>
+        <div className="flex items-start justify-between mb-2">
+          <div>
+            <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 400, fontSize: 20, color: '#0d0712', margin: 0 }}>
+              Perfis de aprendizagem
+            </h2>
+            <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 400, fontSize: 13, color: '#494150', margin: '4px 0 0', lineHeight: 1.5 }}>
+              Um perfil representa alunos com dificuldades comuns e que precisam de adaptações. Se houver alunos diferentes, crie perfis distintos.
+            </p>
+          </div>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center justify-center gap-2 cursor-pointer border-0 bg-transparent"
-            style={{ border: '2px solid #4e008e', borderRadius: 8, height: 40, paddingLeft: 24, paddingRight: 24 }}
+            className="flex items-center justify-center gap-2 cursor-pointer border-0 shrink-0"
+            style={{ background: '#8600F4', borderRadius: 8, height: 40, paddingLeft: 20, paddingRight: 20, marginLeft: 16 }}
           >
-            <div className="relative shrink-0 overflow-hidden" style={{ width: 20, height: 20 }}>
-              <svg style={{ position: 'absolute', inset: '15%', width: '70%', height: '70%' }} viewBox="0 0 14 14" fill="none">
-                <path d={ICON_PLUS_14} fill="#4E008E" />
+            <div className="relative shrink-0 overflow-hidden" style={{ width: 16, height: 16 }}>
+              <svg style={{ position: 'absolute', inset: '10%', width: '80%', height: '80%' }} viewBox="0 0 14 14" fill="none">
+                <path d={ICON_PLUS_14} fill="#fff" />
               </svg>
             </div>
-            <span style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, fontSize: 14, color: '#4e008e', letterSpacing: 0.25, lineHeight: 1.36 }}>
+            <span style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, fontSize: 14, color: '#fff', letterSpacing: 0.25, lineHeight: 1.36, whiteSpace: 'nowrap' }}>
               Novo perfil
             </span>
           </button>
         </div>
 
+        <SearchBar value={profileSearch} onChange={setProfileSearch} />
+
         {/* Profile list */}
-        {formData.allProfiles.length === 0 ? (
+        {filteredProfiles.length === 0 ? (
           <div className="flex-1 flex items-center justify-center">
             <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, color: '#6E6576', textAlign: 'center' }}>
               Nenhum perfil criado ainda
             </p>
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
-            {formData.allProfiles.map((profile) => (
+          <div className="flex flex-col">
+            {filteredProfiles.map((profile) => (
               <div
                 key={profile.id}
-                className="flex items-center gap-3 p-4 rounded-lg"
-                style={{ background: '#F6F0FB', border: '1px solid #E7DFEE' }}
+                className="flex items-start gap-3 py-4"
+                style={{ borderBottom: '1px solid #E7DFEE' }}
               >
                 <div className="flex-1 min-w-0">
-                  <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 600, color: '#8600F4', margin: 0, marginBottom: 4 }}>
+                  <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: '#6E6576', margin: 0 }}>
+                    20/05 às 17:46
+                  </p>
+                  <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 600, color: '#8600F4', margin: '2px 0 4px' }}>
                     {profile.name}
                   </p>
-                  <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: '#494150', margin: 0 }}>
+                  <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 13, color: '#494150', margin: 0, lineHeight: 1.5 }}>
                     {profile.characteristics.join(' • ')}
                   </p>
                 </div>
                 {/* Edit button */}
                 <button
                   onClick={() => setEditingProfile(profile)}
-                  className="border-0 bg-transparent cursor-pointer shrink-0 flex items-center justify-center rounded-md transition-colors hover:bg-[#EDE9F2]"
-                  style={{ width: 28, height: 28 }}
+                  className="border-0 bg-transparent cursor-pointer shrink-0 flex items-center justify-center rounded-md transition-colors hover:bg-[#F6F0FB]"
+                  style={{ width: 32, height: 32 }}
                   title="Editar perfil"
                 >
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path d="M10 1.5L12.5 4L4.5 12H2V9.5L10 1.5Z" stroke="#8600F4" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M11.5 1.5L14.5 4.5L5.5 13.5H2.5V10.5L11.5 1.5Z" stroke="#494150" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
                 {/* Delete button */}
                 <button
                   onClick={() => handleDelete(profile.id)}
                   className="border-0 bg-transparent cursor-pointer shrink-0 flex items-center justify-center rounded-md transition-colors hover:bg-[#FFEBEE]"
-                  style={{ width: 28, height: 28 }}
+                  style={{ width: 32, height: 32 }}
                   title="Remover perfil"
                 >
-                  <svg width="12" height="12" viewBox="0 0 14.17 14.17" fill="none">
-                    <path d={ICON_CLOSE} fill="#A096A9" />
+                  <svg width="14" height="16" viewBox="0 0 14 16" fill="none">
+                    <path d="M1 4H13M4.5 4V2.5C4.5 2.22 4.72 2 5 2H9C9.28 2 9.5 2.22 9.5 2.5V4M5.5 7V13M8.5 7V13M2 4L2.5 14C2.5 14.55 2.95 15 3.5 15H10.5C11.05 15 11.5 14.55 11.5 14L12 4H2Z" stroke="#C62828" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
               </div>
             ))}
+            <button
+              className="mt-6 px-6 py-2.5 rounded-lg cursor-pointer self-end"
+              style={{ border: '1.5px solid #D3CADB', background: 'transparent', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 600, color: '#494150' }}
+            >
+              Carregar mais
+            </button>
           </div>
         )}
       </div>
@@ -727,6 +935,21 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
   const [viewingPlan, setViewingPlan] = useState<HistoryItem | SavedPlan | null>(null);
   const [editingSavedId, setEditingSavedId] = useState<string | null>(null);
   const [editingSavedTitle, setEditingSavedTitle] = useState('');
+  const [historySearch, setHistorySearch] = useState('');
+  const [savedSearch, setSavedSearch] = useState('');
+  const [profileSearch, setProfileSearch] = useState('');
+
+  const filteredHistory = historySearch
+    ? history.filter((h) => h.title.toLowerCase().includes(historySearch.toLowerCase()))
+    : history;
+
+  const filteredSaved = savedSearch
+    ? savedPlans.filter((s) => s.title.toLowerCase().includes(savedSearch.toLowerCase()))
+    : savedPlans;
+
+  const filteredProfiles = profileSearch
+    ? formData.allProfiles.filter((p) => p.name.toLowerCase().includes(profileSearch.toLowerCase()))
+    : formData.allProfiles;
 
   const updateForm = (data: Partial<FormData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
@@ -753,6 +976,13 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
     else if (step === 'result') setStep(3);
   };
 
+  const buildPlanTags = useCallback((): PlanTags => ({
+    year: formData.year || '1º Ano – Ensino Fundamental',
+    subject: formData.subject || 'Ciências',
+    bnccSkills: formData.bnccSkills,
+    adapted: formData.inclusivePlan || formData.selectedProfiles.length > 0,
+  }), [formData]);
+
   const handleLoadingComplete = useCallback(() => {
     setStep('result');
     const snapshot: PlanoFormData = {
@@ -771,6 +1001,7 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
       id: Date.now().toString(),
       date: new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', ' às'),
       title: formData.topic || 'Novo plano de aula',
+      tags: buildPlanTags(),
       isNew: true,
       snapshot,
     };
@@ -778,7 +1009,7 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
     setNewHistoryCount((prev) => prev + 1);
     setShowAlert(true);
     setTimeout(() => setShowAlert(false), 5000);
-  }, [formData]);
+  }, [formData, buildPlanTags]);
 
   const handleRegenerate = () => { setStep('loading'); };
 
@@ -802,6 +1033,7 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
       id: Date.now().toString(),
       date: new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(',', ' às'),
       title: formData.topic || 'Novo plano de aula',
+      tags: buildPlanTags(),
       isNew: true,
       snapshot,
     };
@@ -811,6 +1043,7 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
 
   const handleTabChange = (key: typeof activeTab) => {
     setActiveTab(key);
+    setViewingPlan(null);
     if (key === 'history') {
       setNewHistoryCount(0);
       setHistory((prev) => prev.map((item) => ({ ...item, isNew: false })));
@@ -923,13 +1156,16 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
           </button>
         ))}
         <div className="flex-1" />
+        {/* Help / info button */}
         <button
-          onClick={onClose}
-          className="flex items-center justify-center rounded-lg border-0 bg-transparent cursor-pointer hover:bg-[#F6F0FB]"
-          style={{ width: 32, height: 32 }}
+          className="flex items-center justify-center rounded-full border-0 bg-transparent cursor-pointer hover:bg-[#F6F0FB]"
+          style={{ width: 32, height: 32, border: '1.5px solid #D3CADB' }}
+          title="Ajuda"
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M2 2L14 14M14 2L2 14" stroke="#0D0712" strokeWidth="2" strokeLinecap="round" />
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <circle cx="7" cy="7" r="6" stroke="#A096A9" strokeWidth="1.4" />
+            <path d="M7 9.5V10" stroke="#A096A9" strokeWidth="1.4" strokeLinecap="round" />
+            <path d="M7 4.5C7 4.5 5.5 4.5 5.5 6C5.5 7 6.5 7.25 7 7.5C7.5 7.75 7.5 8 7.5 8.5" stroke="#A096A9" strokeWidth="1.4" strokeLinecap="round" />
           </svg>
         </button>
       </div>
@@ -945,9 +1181,9 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
       )}
 
       {/* ── History tab ─────────────────────────────────────────────── */}
-      {activeTab === 'history' && (
+      {activeTab === 'history' && !viewingPlan && (
         <div className="flex flex-col flex-1 overflow-y-auto px-7 py-6">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-5">
             <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 400, fontSize: 20, color: '#0d0712', margin: 0 }}>
               Histórico dos planos de aula criados por você
             </h2>
@@ -956,11 +1192,13 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
               className="border-0 bg-transparent cursor-pointer"
               style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 600, color: '#8600F4' }}
             >
-              Excluir histórico
+              Limpar histórico
             </button>
           </div>
 
-          {history.length === 0 ? (
+          <SearchBar value={historySearch} onChange={setHistorySearch} />
+
+          {filteredHistory.length === 0 ? (
             <div className="flex-1 flex items-center justify-center">
               <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, color: '#6E6576', textAlign: 'center' }}>
                 Nenhum plano no histórico
@@ -968,15 +1206,21 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
             </div>
           ) : (
             <>
-              {history.map((item) => (
-                <div key={item.id} className="flex items-start gap-4 py-4" style={{ borderBottom: '1px solid #E7DFEE' }}>
+              {filteredHistory.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-start gap-4 py-4 cursor-pointer hover:bg-[#FDFAFF] transition-colors rounded-lg px-2 -mx-2"
+                  style={{ borderBottom: '1px solid #E7DFEE' }}
+                  onClick={() => setViewingPlan(item)}
+                >
                   <div className="flex-1 min-w-0">
-                    <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: '#6E6576', margin: 0, marginBottom: 4 }}>
+                    <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: '#6E6576', margin: 0 }}>
                       {item.date}
                     </p>
-                    <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 500, color: '#0d0712', margin: 0 }}>
+                    <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 500, color: '#0d0712', margin: '2px 0 0' }}>
                       {item.title}
                     </p>
+                    <PlanTagList tags={item.tags} />
                   </div>
                   <ItemMenu
                     actions={[
@@ -997,7 +1241,7 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
               ))}
               <button
                 className="mt-6 px-6 py-2.5 rounded-lg cursor-pointer self-end"
-                style={{ border: '2px solid #4E008E', background: 'transparent', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 600, color: '#4E008E' }}
+                style={{ border: '1.5px solid #D3CADB', background: 'transparent', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 600, color: '#494150' }}
               >
                 Carregar mais
               </button>
@@ -1006,16 +1250,26 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
         </div>
       )}
 
+      {/* History full-screen plan view */}
+      {activeTab === 'history' && viewingPlan && (
+        <PlanFullScreenView
+          item={viewingPlan}
+          onBack={() => setViewingPlan(null)}
+        />
+      )}
+
       {/* ── Saved tab ───────────────────────────────────────────────── */}
-      {activeTab === 'saved' && (
+      {activeTab === 'saved' && !viewingPlan && (
         <div className="flex flex-col flex-1 overflow-y-auto px-7 py-6">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-5">
             <h2 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 400, fontSize: 20, color: '#0d0712', margin: 0 }}>
               Planos de aula que você salvou para acessar mais tarde
             </h2>
           </div>
 
-          {savedPlans.length === 0 ? (
+          <SearchBar value={savedSearch} onChange={setSavedSearch} />
+
+          {filteredSaved.length === 0 ? (
             <div className="flex-1 flex items-center justify-center">
               <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, color: '#6E6576', textAlign: 'center' }}>
                 Nenhum plano salvo
@@ -1023,14 +1277,19 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
             </div>
           ) : (
             <>
-              {savedPlans.map((item) => (
-                <div key={item.id} className="flex items-start gap-4 py-4" style={{ borderBottom: '1px solid #E7DFEE' }}>
+              {filteredSaved.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-start gap-4 py-4 cursor-pointer hover:bg-[#FDFAFF] transition-colors rounded-lg px-2 -mx-2"
+                  style={{ borderBottom: '1px solid #E7DFEE' }}
+                  onClick={() => setViewingPlan(item)}
+                >
                   <div className="flex-1 min-w-0">
-                    <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: '#6E6576', margin: 0, marginBottom: 4 }}>
+                    <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: '#6E6576', margin: 0 }}>
                       {item.date}
                     </p>
                     {editingSavedId === item.id ? (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 mt-1" onClick={(e) => e.stopPropagation()}>
                         <input
                           value={editingSavedTitle}
                           onChange={(e) => setEditingSavedTitle(e.target.value)}
@@ -1058,35 +1317,38 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
                         </button>
                       </div>
                     ) : (
-                      <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 500, color: '#0d0712', margin: 0 }}>
+                      <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 500, color: '#0d0712', margin: '2px 0 0' }}>
                         {item.title}
                       </p>
                     )}
+                    <PlanTagList tags={item.tags} />
                   </div>
-                  <ItemMenu
-                    actions={[
-                      {
-                        label: 'Visualizar',
-                        icon: <IcoEye />,
-                        onClick: () => setViewingPlan(item),
-                      },
-                      {
-                        label: 'Editar título',
-                        icon: <IcoPencil />,
-                        onClick: () => startEditSaved(item),
-                      },
-                      {
-                        label: 'Duplicar',
-                        icon: <IcoDuplicate />,
-                        onClick: () => duplicateSaved(item),
-                      },
-                    ]}
-                  />
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <ItemMenu
+                      actions={[
+                        {
+                          label: 'Visualizar',
+                          icon: <IcoEye />,
+                          onClick: () => setViewingPlan(item),
+                        },
+                        {
+                          label: 'Editar título',
+                          icon: <IcoPencil />,
+                          onClick: () => startEditSaved(item),
+                        },
+                        {
+                          label: 'Duplicar',
+                          icon: <IcoDuplicate />,
+                          onClick: () => duplicateSaved(item),
+                        },
+                      ]}
+                    />
+                  </div>
                 </div>
               ))}
               <button
                 className="mt-6 px-6 py-2.5 rounded-lg cursor-pointer self-end"
-                style={{ border: '2px solid #4E008E', background: 'transparent', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 600, color: '#4E008E' }}
+                style={{ border: '1.5px solid #D3CADB', background: 'transparent', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 600, color: '#494150' }}
               >
                 Carregar mais
               </button>
@@ -1095,9 +1357,23 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
         </div>
       )}
 
+      {/* Saved full-screen plan view */}
+      {activeTab === 'saved' && viewingPlan && (
+        <PlanFullScreenView
+          item={viewingPlan}
+          onBack={() => setViewingPlan(null)}
+        />
+      )}
+
       {/* Profiles tab */}
       {activeTab === 'profiles' && (
-        <ProfilesTab formData={formData} onChange={updateForm} />
+        <ProfilesTab
+          formData={formData}
+          onChange={updateForm}
+          profileSearch={profileSearch}
+          setProfileSearch={setProfileSearch}
+          filteredProfiles={filteredProfiles}
+        />
       )}
 
       {/* Form steps */}
@@ -1203,10 +1479,6 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
         </div>
       )}
 
-      {/* View plan modal */}
-      {viewingPlan && (
-        <ViewPlanModal item={viewingPlan} onClose={() => setViewingPlan(null)} />
-      )}
     </div>
   );
 }
