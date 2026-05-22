@@ -220,7 +220,7 @@ function CreateProfileModal({ onClose, onSave }: CreateProfileModalProps) {
             Criar perfil de aprendizagem
           </p>
           <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 400, fontSize: 16, color: '#494150', lineHeight: 1.52 }}>
-            Detalhe as características do perfil para adaptação
+            Nomeie o perfil e marque as características que melhor representam esse aluno ou grupo
           </p>
         </div>
 
@@ -236,7 +236,7 @@ function CreateProfileModal({ onClose, onSave }: CreateProfileModalProps) {
             >
               <input
                 type="text"
-                placeholder="Ex.: TDAH, Dislexia, Deficiência visual…"
+                placeholder="Ex.: Alunos com TDAH, Turma do reforço, Alunos com dislexia"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="flex-1 outline-none bg-transparent"
@@ -266,7 +266,7 @@ function CreateProfileModal({ onClose, onSave }: CreateProfileModalProps) {
             Características do perfil*
           </p>
           <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 400, fontSize: 10, color: '#494150', lineHeight: 1.36 }}>
-            Selecione até 4 características por perfil ({selectedChars.length}/4)
+            Escolha até 4 características por perfil ({selectedChars.length}/4)
           </p>
           <div className="flex gap-2 pt-2 px-2 overflow-hidden" style={{ background: '#f6f0fb', borderRadius: 8 }}>
             {/* Left column */}
@@ -361,7 +361,7 @@ function CreateProfileModal({ onClose, onSave }: CreateProfileModalProps) {
               style={{ border: '2px solid #4e008e', borderRadius: 8, height: 48, paddingLeft: 24, paddingRight: 24 }}
             >
               <span style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, fontSize: 14, color: '#4e008e', letterSpacing: 0.25, lineHeight: 1.36 }}>
-                Voltar
+                Cancelar
               </span>
             </button>
             <button
@@ -401,7 +401,7 @@ export function StepAdaptacoes({ formData, onChange }: StepAdaptacoesProps) {
   const toggleResource = (r: string) => {
     if (resources.includes(r)) {
       onChange({ resources: resources.filter((x) => x !== r) });
-    } else if (resources.length < 3) {
+    } else if (resources.length < 5) {
       onChange({ resources: [...resources, r] });
     }
   };
@@ -423,7 +423,7 @@ export function StepAdaptacoes({ formData, onChange }: StepAdaptacoesProps) {
     });
   };
 
-  const atResourceLimit = resources.length >= 3;
+  const atResourceLimit = resources.length >= 5;
 
   const dropdownTriggerLabel =
     selectedProfiles.length === 0
@@ -440,7 +440,7 @@ export function StepAdaptacoes({ formData, onChange }: StepAdaptacoesProps) {
           Adaptações
         </h2>
         <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 400, fontSize: 12, color: '#494150' }}>
-          * Campos com asterisco são obrigatórios
+          *Campos obrigatórios
         </span>
       </div>
 
@@ -469,10 +469,10 @@ export function StepAdaptacoes({ formData, onChange }: StepAdaptacoesProps) {
         {/* Content */}
         <div className="flex-1 min-w-0">
           <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 600, fontSize: 14, color: '#0d0712', lineHeight: 1.52 }}>
-            Criar plano inclusivo
+            Adaptar para diferentes perfis
           </p>
           <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 400, fontSize: 10, color: '#0d0712', lineHeight: 1.36, marginTop: 4 }}>
-            Crie adaptações pedagógicas personalizadas para diferentes perfis de aprendizagem
+            Ative a opção para selecionar ou criar um perfil de inclusão
           </p>
         </div>
         {/* Radio indicator */}
@@ -489,150 +489,155 @@ export function StepAdaptacoes({ formData, onChange }: StepAdaptacoesProps) {
         </div>
       </button>
 
-      {/* Profiles section — only when inclusivePlan is ON */}
-      {inclusivePlan && (
-        <div className="flex flex-col gap-6 mb-6">
-          {/* Dropdown */}
-          <div className="relative">
-            <p className="mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 600, fontSize: 14, color: '#0d0712', lineHeight: 1.52 }}>
-              Perfis de aprendizagem*
-            </p>
-            {/* Trigger */}
-            <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="w-full flex items-center justify-between cursor-pointer border-0"
-              style={{
-                background: dropdownOpen ? '#f4e8fe' : '#fffcff',
-                border: `1px solid ${dropdownOpen ? '#8600f4' : '#bab0c3'}`,
-                borderRadius: 8,
-                height: 48,
-                paddingLeft: 16,
-                paddingRight: 16,
-                transition: 'background 0.15s, border-color 0.15s',
-              }}
-            >
-              <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 400, fontSize: 14, color: '#0d0712', lineHeight: 1.52 }}>
-                {dropdownTriggerLabel}
-              </span>
-              {/* Chevron — rotate 180 when open (pointing up) */}
-              <div
-                style={{
-                  position: 'relative',
-                  width: 16,
-                  height: 16,
-                  overflow: 'hidden',
-                  flexShrink: 0,
-                  transform: dropdownOpen ? 'rotate(180deg)' : 'none',
-                  transition: 'transform 0.2s',
-                }}
-              >
-                <svg
-                  style={{ position: 'absolute', top: '36.26%', left: '21.2%', right: '21.32%', bottom: '31.24%', width: '57.48%', height: '32.5%' }}
-                  viewBox="0 0 9.2 5.2"
-                  fill="none"
-                  preserveAspectRatio="none"
-                >
-                  <path d={ICON_CHEVRON_SM} fill={dropdownOpen ? '#8600F4' : '#494150'} />
-                </svg>
-              </div>
-            </button>
-
-            {/* Options list */}
-            {dropdownOpen && (
-              <div
-                className="absolute z-10 w-full flex flex-col"
-                style={{
-                  top: 'calc(100% + 4px)',
-                  background: '#fffcff',
-                  borderRadius: 8,
-                  padding: 8,
-                  boxShadow: '0px 2px 2px rgba(13,7,18,0.16)',
-                }}
-              >
-                {allProfiles.length === 0 ? (
-                  <div className="px-4 py-5 flex items-center justify-center">
-                    <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 13, color: '#6E6576', textAlign: 'center' }}>
-                      Nenhum perfil de aprendizagem criado.{' '}
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setDropdownOpen(false); setShowModal(true); }}
-                        className="border-0 bg-transparent cursor-pointer"
-                        style={{ color: '#8600F4', fontWeight: 700, fontSize: 13, fontFamily: 'Plus Jakarta Sans, sans-serif', textDecoration: 'underline' }}
-                      >
-                        Criar perfil de aprendizagem
-                      </button>
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    {atProfileLimit && (
-                      <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: '#8600F4', fontWeight: 600, padding: '6px 16px 2px' }}>
-                        Limite de 4 perfis atingido.
-                      </p>
-                    )}
-                    {allProfiles.map((profile) => {
-                      const sel = !!selectedProfiles.find((p) => p.id === profile.id);
-                      const disabled = !sel && atProfileLimit;
-                      return (
-                        <button
-                          key={profile.id}
-                          onClick={(e) => { e.stopPropagation(); if (!disabled) toggleProfile(profile); }}
-                          disabled={disabled}
-                          className="flex items-center gap-3 text-left border-0 w-full"
-                          style={{
-                            background: sel ? '#e7dfee' : disabled ? '#F9F7FB' : 'white',
-                            borderRadius: 8,
-                            height: 48,
-                            paddingLeft: 16,
-                            paddingRight: 8,
-                            cursor: disabled ? 'not-allowed' : 'pointer',
-                            transition: 'background 0.1s',
-                          }}
-                        >
-                          <Cb20 checked={sel} />
-                          <div className="flex-1 overflow-hidden min-w-0">
-                            <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 600, fontSize: 14, color: disabled ? '#BAB0C3' : '#8600f4', lineHeight: 1.52 }}>
-                              {profile.name}
-                            </span>
-                            {profile.characteristics.length > 0 && (
-                              <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 400, fontSize: 14, color: disabled ? '#D3CADB' : '#494150', lineHeight: 1.52, marginLeft: 4 }}>
-                                {profile.characteristics.slice(0, 2).join('  •  ')}
-                                {profile.characteristics.length > 2 ? '  •  ...' : ''}
-                              </span>
-                            )}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Novo perfil button */}
+      {/* Profiles section — always visible; disabled when inclusivePlan is OFF */}
+      <div className="flex flex-col gap-3 mb-6">
+        {/* Label */}
+        <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 600, fontSize: 14, color: inclusivePlan ? '#0d0712' : '#BAB0C3', lineHeight: 1.52 }}>
+          Perfis de aprendizagem*
+        </p>
+        {/* Dropdown trigger */}
+        <div className="relative">
           <button
-            onClick={() => { setDropdownOpen(false); setShowModal(true); }}
-            className="flex items-center justify-center gap-2 cursor-pointer border-0 bg-transparent"
+            onClick={() => inclusivePlan && setDropdownOpen(!dropdownOpen)}
+            disabled={!inclusivePlan}
+            className="w-full flex items-center justify-between border-0"
             style={{
-              border: '2px solid #4e008e',
+              background: !inclusivePlan ? '#F6F0FB' : dropdownOpen ? '#f4e8fe' : '#fffcff',
+              border: `1px solid ${!inclusivePlan ? '#E7DFEE' : dropdownOpen ? '#8600f4' : '#bab0c3'}`,
               borderRadius: 8,
-              height: 40,
-              paddingLeft: 24,
-              paddingRight: 24,
-              alignSelf: 'flex-start',
+              height: 48,
+              paddingLeft: 16,
+              paddingRight: 16,
+              cursor: inclusivePlan ? 'pointer' : 'default',
+              transition: 'background 0.15s, border-color 0.15s',
             }}
           >
-            <div className="relative shrink-0 overflow-hidden" style={{ width: 20, height: 20 }}>
-              <svg style={{ position: 'absolute', inset: '15%', width: '70%', height: '70%' }} viewBox="0 0 14 14" fill="none">
-                <path d={ICON_PLUS_14} fill="#4E008E" />
+            <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 400, fontSize: 14, color: inclusivePlan ? '#0d0712' : '#BAB0C3', lineHeight: 1.52 }}>
+              {dropdownTriggerLabel}
+            </span>
+            <div
+              style={{
+                position: 'relative',
+                width: 16,
+                height: 16,
+                overflow: 'hidden',
+                flexShrink: 0,
+                transform: dropdownOpen ? 'rotate(180deg)' : 'none',
+                transition: 'transform 0.2s',
+              }}
+            >
+              <svg
+                style={{ position: 'absolute', top: '36.26%', left: '21.2%', right: '21.32%', bottom: '31.24%', width: '57.48%', height: '32.5%' }}
+                viewBox="0 0 9.2 5.2"
+                fill="none"
+                preserveAspectRatio="none"
+              >
+                <path d={ICON_CHEVRON_SM} fill={!inclusivePlan ? '#BAB0C3' : dropdownOpen ? '#8600F4' : '#494150'} />
               </svg>
             </div>
-            <span style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, fontSize: 14, color: '#4e008e', letterSpacing: 0.25, lineHeight: 1.36 }}>
-              Novo perfil
-            </span>
           </button>
+
+          {/* Options list */}
+          {dropdownOpen && inclusivePlan && (
+            <div
+              className="absolute z-10 w-full flex flex-col"
+              style={{
+                top: 'calc(100% + 4px)',
+                background: '#fffcff',
+                borderRadius: 8,
+                padding: 8,
+                boxShadow: '0px 2px 2px rgba(13,7,18,0.16)',
+              }}
+            >
+              {allProfiles.length === 0 ? (
+                <div className="px-4 py-5 flex items-center justify-center">
+                  <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 13, color: '#6E6576', textAlign: 'center' }}>
+                    Nenhum perfil de aprendizagem criado.{' '}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setDropdownOpen(false); setShowModal(true); }}
+                      className="border-0 bg-transparent cursor-pointer"
+                      style={{ color: '#8600F4', fontWeight: 700, fontSize: 13, fontFamily: 'Plus Jakarta Sans, sans-serif', textDecoration: 'underline' }}
+                    >
+                      Criar perfil de aprendizagem
+                    </button>
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {atProfileLimit && (
+                    <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: '#8600F4', fontWeight: 600, padding: '6px 16px 2px' }}>
+                      Limite de 4 perfis atingido.
+                    </p>
+                  )}
+                  {allProfiles.map((profile) => {
+                    const sel = !!selectedProfiles.find((p) => p.id === profile.id);
+                    const disabled = !sel && atProfileLimit;
+                    return (
+                      <button
+                        key={profile.id}
+                        onClick={(e) => { e.stopPropagation(); if (!disabled) toggleProfile(profile); }}
+                        disabled={disabled}
+                        className="flex items-center gap-3 text-left border-0 w-full"
+                        style={{
+                          background: sel ? '#e7dfee' : disabled ? '#F9F7FB' : 'white',
+                          borderRadius: 8,
+                          height: 48,
+                          paddingLeft: 16,
+                          paddingRight: 8,
+                          cursor: disabled ? 'not-allowed' : 'pointer',
+                          transition: 'background 0.1s',
+                        }}
+                      >
+                        <Cb20 checked={sel} />
+                        <div className="flex-1 overflow-hidden min-w-0">
+                          <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 600, fontSize: 14, color: disabled ? '#BAB0C3' : '#8600f4', lineHeight: 1.52 }}>
+                            {profile.name}
+                          </span>
+                          {profile.characteristics.length > 0 && (
+                            <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 400, fontSize: 14, color: disabled ? '#D3CADB' : '#494150', lineHeight: 1.52, marginLeft: 4 }}>
+                              {profile.characteristics.slice(0, 2).join('  •  ')}
+                              {profile.characteristics.length > 2 ? '  •  ...' : ''}
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </>
+              )}
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Helper text + Novo perfil — only when toggle is ON */}
+        {inclusivePlan && (
+          <div className="flex items-center justify-between">
+            <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 400, fontSize: 12, color: '#6E6576', lineHeight: 1.36 }}>
+              Escolha até 4 perfis para adaptar o plano
+            </p>
+            <button
+              onClick={() => { setDropdownOpen(false); setShowModal(true); }}
+              className="flex items-center justify-center gap-2 cursor-pointer border-0 bg-transparent"
+              style={{
+                border: '2px solid #4e008e',
+                borderRadius: 8,
+                height: 40,
+                paddingLeft: 20,
+                paddingRight: 20,
+              }}
+            >
+              <div className="relative shrink-0 overflow-hidden" style={{ width: 20, height: 20 }}>
+                <svg style={{ position: 'absolute', inset: '15%', width: '70%', height: '70%' }} viewBox="0 0 14 14" fill="none">
+                  <path d={ICON_PLUS_14} fill="#4E008E" />
+                </svg>
+              </div>
+              <span style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, fontSize: 14, color: '#4e008e', letterSpacing: 0.25, lineHeight: 1.36 }}>
+                Novo perfil
+              </span>
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Recursos accordion — horizontal line separators (no border box) */}
       <div className="flex flex-col w-full">
@@ -657,23 +662,16 @@ export function StepAdaptacoes({ formData, onChange }: StepAdaptacoesProps) {
               <path d={ICON_RESOURCES} fill={resourcesOpen ? '#8600F4' : '#494150'} />
             </svg>
           </div>
-          {/* Label + badge */}
+          {/* Label */}
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 600, fontSize: 16, color: resourcesOpen ? '#8600F4' : '#494150', lineHeight: 1.52, whiteSpace: 'nowrap' }}>
-              Recursos
+              Recursos{' '}
+              <span style={{ fontWeight: 400, color: resourcesOpen ? '#8600F4' : '#494150' }}>(opcional)</span>
             </span>
-            <div
-              className="flex items-center justify-center shrink-0"
-              style={{ border: '1px solid #0d0712', borderRadius: 10000, height: 28, paddingLeft: 12, paddingRight: 12 }}
-            >
-              <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 600, fontSize: 12, color: '#0d0712', lineHeight: 1.36 }}>
-                opcional
-              </span>
-            </div>
           </div>
           {/* Counter */}
           <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 400, fontSize: 12, color: resourcesOpen ? '#8600F4' : '#494150', lineHeight: 1.36, flexShrink: 0 }}>
-            {resources.length}/3 selecionadas
+            {resources.length}/5 selecionadas
           </span>
           {/* Chevron */}
           <div
@@ -706,7 +704,7 @@ export function StepAdaptacoes({ formData, onChange }: StepAdaptacoesProps) {
           <div className="flex flex-wrap gap-2 pt-3 px-2 pb-3">
             {atResourceLimit && (
               <p className="w-full mb-1" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: '#8600F4', fontWeight: 600 }}>
-                Limite de 3 recursos atingido.
+                Limite de 5 recursos atingido.
               </p>
             )}
             {RESOURCES.map((r) => {

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import type { LearningProfile } from './StepAdaptacoes';
-import type { PreviousPlan } from './StepContexto';
 
 export interface PlanoFormData {
   year: string;
@@ -11,7 +10,6 @@ export interface PlanoFormData {
   bnccSkills: string[];
   inclusivePlan: boolean;
   resources: string[];
-  linkedPlan: PreviousPlan | null;
   selectedProfiles: LearningProfile[];
 }
 
@@ -341,7 +339,6 @@ export function PlanoGerado({ formData, onRegenerate, onSave }: PlanoGeradoProps
   const topic = formData.topic || 'Fotossíntese';
   const num = formData.numLessons || '2';
   const hasInclusive = formData.inclusivePlan && formData.selectedProfiles.length > 0;
-  const linkedPlan = formData.linkedPlan;
   const bnccCodes = formData.bnccSkills;
 
   const tags = [
@@ -377,12 +374,7 @@ export function PlanoGerado({ formData, onRegenerate, onSave }: PlanoGeradoProps
         {/* Title row */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 8 }}>
           <h2 style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 800, fontSize: 20, color: '#0D0712', lineHeight: 1.3 }}>
-            {linkedPlan ? (
-              <>
-                <span style={{ color: '#494150' }}>Continuação: </span>
-                {topic}
-              </>
-            ) : topic}
+            {topic}
           </h2>
 
           <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, gap: 8 }}>
@@ -483,19 +475,6 @@ export function PlanoGerado({ formData, onRegenerate, onSave }: PlanoGeradoProps
             </button>
           </div>
         </div>
-
-        {/* Linked plan */}
-        {linkedPlan && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-              <path d="M5 7.5C5.4 8.1 6 8.5 6.7 8.5H8.5C9.6 8.5 10.5 7.6 10.5 6.5C10.5 5.4 9.6 4.5 8.5 4.5H7.5" stroke="#8600F4" strokeWidth="1.3" strokeLinecap="round" />
-              <path d="M8 5.5C7.6 4.9 7 4.5 6.3 4.5H4.5C3.4 4.5 2.5 5.4 2.5 6.5C2.5 7.6 3.4 8.5 4.5 8.5H5.5" stroke="#8600F4" strokeWidth="1.3" strokeLinecap="round" />
-            </svg>
-            <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: '#8600F4', fontWeight: 500 }}>
-              Vinculado a: <strong>{linkedPlan.title}</strong>
-            </span>
-          </div>
-        )}
 
         {/* Tags */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>

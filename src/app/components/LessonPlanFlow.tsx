@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { StepContexto, type PreviousPlan } from './StepContexto';
+import { StepContexto } from './StepContexto';
 import { StepTematica } from './StepTematica';
 import { StepAdaptacoes, type LearningProfile } from './StepAdaptacoes';
 import { LoadingPlan } from './LoadingPlan';
@@ -9,7 +9,7 @@ import { PlanoGerado, type PlanoFormData } from './PlanoGerado';
 const DEFAULT_PROFILES: LearningProfile[] = [
   {
     id: 'tdah',
-    name: 'TDAH',
+    name: 'Alunos com transtorno do déficit de atenção (TDAH)',
     characteristics: [
       'Necessita de apoio frente a desafios novos',
       'Necessita de apoio para manter a atenção',
@@ -19,7 +19,7 @@ const DEFAULT_PROFILES: LearningProfile[] = [
   },
   {
     id: 'dislexia',
-    name: 'Dislexia',
+    name: 'Alunos com dislexia',
     characteristics: [
       'Necessita de apoio para manter a atenção',
       'Necessita de apoio visual e/ou concretos',
@@ -29,7 +29,7 @@ const DEFAULT_PROFILES: LearningProfile[] = [
   },
   {
     id: 'tea',
-    name: 'TEA',
+    name: 'Alunos com Transtorno do Espectro Autista (TEA)',
     characteristics: [
       'Necessita de organização, rotina e previsibilidade',
       'Necessita de rotinas e combinados',
@@ -39,7 +39,7 @@ const DEFAULT_PROFILES: LearningProfile[] = [
   },
   {
     id: 'daltonismo',
-    name: 'Daltonismo',
+    name: 'Alunos com daltonismo',
     characteristics: [
       'Necessita de apoio visual e/ou concretos',
       'Beneficia-se de ambientes com menos estímulos',
@@ -47,7 +47,7 @@ const DEFAULT_PROFILES: LearningProfile[] = [
   },
   {
     id: 'baixa_visao',
-    name: 'Baixa visão',
+    name: 'Alunos com baixa visão',
     characteristics: [
       'Necessita de apoio visual e/ou concretos',
       'Necessita de tempo ampliado para realizar atividades',
@@ -63,7 +63,6 @@ interface FormData {
   subject: string;
   numLessons: string;
   lessonTime: string;
-  linkedPlan: PreviousPlan | null;
   topic: string;
   bnccSkills: string[];
   inclusivePlan: boolean;
@@ -77,7 +76,6 @@ const INITIAL_FORM: FormData = {
   subject: '',
   numLessons: '2',
   lessonTime: '50',
-  linkedPlan: null,
   topic: '',
   bnccSkills: [],
   inclusivePlan: false,
@@ -472,7 +470,6 @@ function PlanFullScreenView({
     bnccSkills: item.tags.bnccSkills,
     inclusivePlan: item.tags.adapted,
     resources: [],
-    linkedPlan: null,
     selectedProfiles: [],
   };
 
@@ -644,7 +641,7 @@ function CreateProfileModal({ onClose, onSave, initialProfile }: CreateProfileMo
             {isEditing ? 'Editar perfil de aprendizagem' : 'Criar perfil de aprendizagem'}
           </p>
           <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 400, fontSize: 16, color: '#494150', lineHeight: 1.52 }}>
-            Detalhe as características do perfil para adaptação
+            Nomeie o perfil e marque as características que melhor representam esse aluno ou grupo
           </p>
         </div>
 
@@ -660,7 +657,7 @@ function CreateProfileModal({ onClose, onSave, initialProfile }: CreateProfileMo
             >
               <input
                 type="text"
-                placeholder="Ex.: TDAH, Dislexia, Deficiência visual…"
+                placeholder="Ex.: Alunos com TDAH, Turma do reforço, Alunos com dislexia"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="flex-1 outline-none bg-transparent"
@@ -690,7 +687,7 @@ function CreateProfileModal({ onClose, onSave, initialProfile }: CreateProfileMo
             Características do perfil*
           </p>
           <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 400, fontSize: 10, color: '#494150', lineHeight: 1.36 }}>
-            Selecione até 4 características por perfil ({selectedChars.length}/4)
+            Escolha até 4 características por perfil ({selectedChars.length}/4)
           </p>
           <div className="flex gap-2 pt-2 px-2 overflow-hidden" style={{ background: '#f6f0fb', borderRadius: 8 }}>
             {/* Left column */}
@@ -755,7 +752,7 @@ function CreateProfileModal({ onClose, onSave, initialProfile }: CreateProfileMo
               style={{ border: '2px solid #4e008e', borderRadius: 8, height: 48, paddingLeft: 24, paddingRight: 24 }}
             >
               <span style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 600, fontSize: 14, color: '#4e008e', letterSpacing: 0.25, lineHeight: 1.36 }}>
-                Voltar
+                Cancelar
               </span>
             </button>
             <button
@@ -994,7 +991,6 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
       bnccSkills: formData.bnccSkills,
       inclusivePlan: formData.inclusivePlan,
       resources: formData.resources,
-      linkedPlan: formData.linkedPlan,
       selectedProfiles: formData.selectedProfiles,
     };
     const newItem: HistoryItem = {
@@ -1026,7 +1022,6 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
       bnccSkills: formData.bnccSkills,
       inclusivePlan: formData.inclusivePlan,
       resources: formData.resources,
-      linkedPlan: formData.linkedPlan,
       selectedProfiles: formData.selectedProfiles,
     };
     const newSaved: SavedPlan = {
@@ -1456,7 +1451,7 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
             <div className="flex-1 overflow-y-auto pr-2">
               {step === 1 && (
                 <StepContexto
-                  formData={{ year: formData.year, subject: formData.subject, numLessons: formData.numLessons, lessonTime: formData.lessonTime, linkedPlan: formData.linkedPlan }}
+                  formData={{ year: formData.year, subject: formData.subject, numLessons: formData.numLessons, lessonTime: formData.lessonTime }}
                   onChange={updateForm}
                 />
               )}

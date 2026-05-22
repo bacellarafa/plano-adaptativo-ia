@@ -271,7 +271,6 @@ function Cb20({ checked }: { checked: boolean }) {
 export function StepTematica({ formData, onChange, selectedYear, selectedSubject }: StepTematicaProps) {
   const [bnccOpen, setBnccOpen] = useState(false);
   const [bnccSearch, setBnccSearch] = useState('');
-  const [isDragging, setIsDragging] = useState(false);
 
   const suggestions = SUGGESTIONS_BY_SUBJECT[selectedSubject] ?? DEFAULT_SUGGESTIONS;
   const bnccList = BNCC_BY_SUBJECT[selectedSubject] ?? DEFAULT_BNCC;
@@ -295,10 +294,10 @@ export function StepTematica({ formData, onChange, selectedYear, selectedSubject
       {/* Section header */}
       <div className="flex items-center justify-between mb-5">
         <h2 style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 700, fontSize: 18, color: '#0D0712' }}>
-          Temática
+          Temática da aula
         </h2>
         <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 400, fontSize: 12, color: '#A096A9' }}>
-          * Campos com asterisco são obrigatórios
+          *Campos obrigatórios
         </span>
       </div>
 
@@ -326,8 +325,7 @@ export function StepTematica({ formData, onChange, selectedYear, selectedSubject
           onBlur={(e) => (e.target.style.borderColor = '#D3CADB')}
         />
         <p className="mt-1" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: '#6E6576' }}>
-          Descreva o tema da aula ou escolha entre as sugestões abaixo
-          {selectedSubject && <span style={{ color: '#8600F4', fontWeight: 600 }}> para {selectedSubject}</span>}
+          Escolha um tema para a criação do seu plano.
         </p>
       </div>
 
@@ -370,16 +368,8 @@ export function StepTematica({ formData, onChange, selectedYear, selectedSubject
           </svg>
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 600, fontSize: 16, color: bnccOpen ? '#8600F4' : '#494150', whiteSpace: 'nowrap' }}>
-              Habilidades BNCC
+              Habilidades BNCC (opcional)
             </span>
-            <div
-              className="flex items-center justify-center shrink-0"
-              style={{ border: '1px solid #0D0712', borderRadius: 10000, height: 28, paddingLeft: 12, paddingRight: 12 }}
-            >
-              <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 600, fontSize: 12, color: '#0D0712' }}>
-                opcional
-              </span>
-            </div>
           </div>
           <span style={{
             fontFamily: 'Plus Jakarta Sans, sans-serif',
@@ -480,47 +470,6 @@ export function StepTematica({ formData, onChange, selectedYear, selectedSubject
         )}
       </div>
 
-      {/* Upload */}
-      <div className="mt-1">
-        <p className="mb-2 flex items-center gap-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 600, fontSize: 14, color: '#0D0712' }}>
-          Importar base
-          <span
-            className="flex items-center justify-center"
-            style={{ border: '1px solid #0D0712', borderRadius: 10000, height: 24, paddingLeft: 10, paddingRight: 10, fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 11, fontWeight: 600, color: '#0D0712' }}
-          >
-            opcional
-          </span>
-        </p>
-        <div
-          className="flex flex-col items-center justify-center gap-3 py-8 px-5 rounded-xl text-center cursor-pointer transition-all"
-          style={{
-            border: `1.5px dashed ${isDragging ? '#8600F4' : '#D3CADB'}`,
-            borderRadius: 12,
-            background: isDragging ? '#F4E8FE' : '#FFFCFF',
-          }}
-          onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-          onDragLeave={() => setIsDragging(false)}
-          onDrop={(e) => { e.preventDefault(); setIsDragging(false); }}
-        >
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-            <rect x="8" y="4" width="24" height="32" rx="3" stroke="#8600F4" strokeWidth="1.6" />
-            <path d="M20 14V26M15 20L20 14L25 20" stroke="#8600F4" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, color: '#6E6576' }}>
-            Arraste e solte os arquivos aqui ou
-          </p>
-          <button
-            className="px-5 py-2 rounded-lg cursor-pointer transition-colors"
-            style={{ background: '#8600F4', border: 'none', fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 700, color: '#fff' }}
-          >
-            Selecione
-          </button>
-          <div style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 11, color: '#A096A9', lineHeight: 1.7 }}>
-            <p>Tamanho máximo: 10MB</p>
-            <p>Arquivos permitidos: PDF, PNG e JPEG</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
