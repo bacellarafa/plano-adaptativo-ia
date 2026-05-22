@@ -561,7 +561,7 @@ function PlanFullScreenView({
       </div>
       {/* Plan content */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
-        <PlanoGerado formData={formData} onRegenerate={onRegenerate ?? (() => {})} />
+        <PlanoGerado formData={formData} onRegenerate={onRegenerate ?? (() => {})} hideInternalTags />
       </div>
     </div>
   );
@@ -1154,7 +1154,7 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
         {/* Help / info button */}
         <button
           className="flex items-center justify-center rounded-full border-0 bg-transparent cursor-pointer hover:bg-[#F6F0FB]"
-          style={{ width: 32, height: 32, border: '1.5px solid #D3CADB' }}
+          style={{ width: 32, height: 32 }}
           title="Ajuda"
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -1385,7 +1385,7 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
               </h1>
               <button
                 className="flex items-center justify-center rounded-full border-0 bg-transparent cursor-pointer"
-                style={{ width: 28, height: 28, border: '1.5px solid #D3CADB' }}
+                style={{ width: 28, height: 28 }}
               >
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <circle cx="7" cy="7" r="6" stroke="#A096A9" strokeWidth="1.4" />

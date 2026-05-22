@@ -137,85 +137,6 @@ const DEFAULT_BNCC: BnccEntry[] = [
   { code: 'EF06CI01', desc: 'Classificar como homogêneas ou heterogêneas as misturas' },
 ];
 
-const SUGGESTIONS_BY_SUBJECT: Record<string, { title: string; desc: string }[]> = {
-  'Ciências': [
-    { title: 'Fotossíntese', desc: 'Produção de energia nas plantas' },
-    { title: 'Ciclo da Água', desc: 'Evaporação, condensação e precipitação' },
-    { title: 'Cadeia Alimentar', desc: 'Relações tróficas nos ecossistemas' },
-  ],
-  'Matemática': [
-    { title: 'Frações', desc: 'Operações com frações e decimais' },
-    { title: 'Geometria', desc: 'Figuras planas e sólidos geométricos' },
-    { title: 'Álgebra', desc: 'Expressões e equações algébricas' },
-  ],
-  'Língua Portuguesa': [
-    { title: 'Redação Dissertativa', desc: 'Estrutura e argumentação no texto' },
-    { title: 'Gêneros Textuais', desc: 'Identificação e produção de gêneros' },
-    { title: 'Concordância Verbal', desc: 'Regras e casos especiais' },
-  ],
-  'História': [
-    { title: 'Era das Navegações', desc: 'Expansão marítima europeia' },
-    { title: 'Revolução Industrial', desc: 'Transformações sociais e econômicas' },
-    { title: 'Segunda Guerra Mundial', desc: 'Causas, desenvolvimento e consequências' },
-  ],
-  'Geografia': [
-    { title: 'Biomas Brasileiros', desc: 'Características e biodiversidade' },
-    { title: 'Urbanização', desc: 'Crescimento das cidades no Brasil' },
-    { title: 'Clima e Vegetação', desc: 'Relações entre clima e fauna/flora' },
-  ],
-  'Inglês': [
-    { title: 'Reading Comprehension', desc: 'Estratégias de leitura em inglês' },
-    { title: 'Present Perfect', desc: 'Uso e formação do tempo verbal' },
-    { title: 'Vocabulary Building', desc: 'Ampliação de vocabulário contextualizado' },
-  ],
-  'Artes': [
-    { title: 'Arte Contemporânea', desc: 'Movimentos e expressões artísticas atuais' },
-    { title: 'Expressão Plástica', desc: 'Técnicas de pintura, escultura e colagem' },
-    { title: 'Teatro e Drama', desc: 'Criação e encenação de peças teatrais' },
-  ],
-  'Educação Física': [
-    { title: 'Esportes Coletivos', desc: 'Regras, estratégias e fair play' },
-    { title: 'Consciência Corporal', desc: 'Postura, equilíbrio e coordenação motora' },
-    { title: 'Jogos e Brincadeiras', desc: 'Cultura lúdica e tradições populares' },
-  ],
-  'Biologia': [
-    { title: 'Genética', desc: 'Hereditariedade e leis de Mendel' },
-    { title: 'Ecossistemas', desc: 'Relações ecológicas e cadeias alimentares' },
-    { title: 'Sistema Nervoso', desc: 'Estrutura e funcionamento neurológico' },
-  ],
-  'Física': [
-    { title: 'Cinemática', desc: 'Movimento, velocidade e aceleração' },
-    { title: 'Eletromagnetismo', desc: 'Campos elétricos e magnéticos' },
-    { title: 'Ondas e Som', desc: 'Propagação e fenômenos ondulatórios' },
-  ],
-  'Química': [
-    { title: 'Reações Químicas', desc: 'Tipos, balanceamento e estequiometria' },
-    { title: 'Tabela Periódica', desc: 'Organização dos elementos químicos' },
-    { title: 'Soluções', desc: 'Concentração, diluição e misturas' },
-  ],
-  'Filosofia': [
-    { title: 'Ética e Moral', desc: 'Fundamentos filosóficos da conduta humana' },
-    { title: 'Filosofia Política', desc: 'Estado, poder e democracia' },
-    { title: 'Epistemologia', desc: 'Teoria do conhecimento e verdade' },
-  ],
-  'Sociologia': [
-    { title: 'Estratificação Social', desc: 'Classes, desigualdade e mobilidade' },
-    { title: 'Cultura e Sociedade', desc: 'Identidade, diversidade e cultura' },
-    { title: 'Movimentos Sociais', desc: 'Ação coletiva e transformação social' },
-  ],
-  'Redação': [
-    { title: 'Dissertação-Argumentativa', desc: 'Estrutura e estratégias argumentativas' },
-    { title: 'Coesão e Coerência', desc: 'Elementos conectivos e organização textual' },
-    { title: 'Proposta de Intervenção', desc: 'Resolução de problemas sociais no ENEM' },
-  ],
-};
-
-const DEFAULT_SUGGESTIONS = [
-  { title: 'Fotossíntese', desc: 'Sugestão com base no ano e disciplina' },
-  { title: 'Ciclo da Água', desc: 'Sugestão com base no ano e disciplina' },
-  { title: 'Cadeia Alimentar', desc: 'Sugestão com base no ano e disciplina' },
-];
-
 // DS icon paths — same as StepAdaptacoes
 const ICON_CB20_BG = 'M0 4C0 1.79086 1.79086 0 4 0H16C18.2091 0 20 1.79086 20 4V16C20 18.2091 18.2091 20 16 20H4C1.79086 20 0 18.2091 0 16V4Z';
 const ICON_CB20_CHECK = 'M5.31736 9.20848C4.90595 9.62112 4.88028 10.3142 5.32428 10.7262L7.94224 13.3449C8.35614 13.786 9.05937 13.813 9.47168 13.3382L14.6532 8.15651C15.1256 7.74624 15.1012 7.04793 14.6663 6.63325C14.2538 6.19635 13.5654 6.22336 13.1546 6.63161L8.71587 11.073L6.85252 9.20814L6.85124 9.20687C6.4278 8.7866 5.74242 8.78662 5.31898 9.20685L5.31736 9.20848Z';
@@ -272,7 +193,6 @@ export function StepTematica({ formData, onChange, selectedYear, selectedSubject
   const [bnccOpen, setBnccOpen] = useState(false);
   const [bnccSearch, setBnccSearch] = useState('');
 
-  const suggestions = SUGGESTIONS_BY_SUBJECT[selectedSubject] ?? DEFAULT_SUGGESTIONS;
   const bnccList = BNCC_BY_SUBJECT[selectedSubject] ?? DEFAULT_BNCC;
   const filtered = bnccSearch
     ? bnccList.filter((b) => b.code.toLowerCase().includes(bnccSearch.toLowerCase()) || b.desc.toLowerCase().includes(bnccSearch.toLowerCase()))
@@ -327,32 +247,6 @@ export function StepTematica({ formData, onChange, selectedYear, selectedSubject
         <p className="mt-1" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: '#6E6576' }}>
           Escolha um tema para a criação do seu plano.
         </p>
-      </div>
-
-      {/* Suggestions */}
-      <div className="flex gap-3 mb-5 mt-3">
-        {suggestions.map((sug) => {
-          const sel = formData.topic === sug.title;
-          return (
-            <button
-              key={sug.title}
-              onClick={() => onChange({ topic: sug.title })}
-              className="flex-1 p-3 text-left border rounded-lg cursor-pointer transition-all"
-              style={{
-                background: sel ? '#F4E8FE' : '#fff',
-                borderColor: sel ? '#8600F4' : '#D3CADB',
-                borderRadius: 8,
-              }}
-            >
-              <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontWeight: 600, fontSize: 13, color: sel ? '#8600F4' : '#494150', marginBottom: 4 }}>
-                {sug.title}
-              </p>
-              <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 11, color: '#A096A9' }}>
-                {sug.desc}
-              </p>
-            </button>
-          );
-        })}
       </div>
 
       {/* BNCC accordion — horizontal line pattern, DS Cb20 checkboxes */}

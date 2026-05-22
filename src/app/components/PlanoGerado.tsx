@@ -17,17 +17,8 @@ interface PlanoGeradoProps {
   formData: PlanoFormData;
   onRegenerate: () => void;
   onSave?: () => void;
+  hideInternalTags?: boolean;
 }
-
-const PROFILE_PALETTE = [
-  { bg: '#F4E8FE', border: '#8600F4', text: '#8600F4' },
-  { bg: '#FFF0E3', border: '#FF7500', text: '#FF7500' },
-  { bg: '#FFE3F2', border: '#FF0098', text: '#FF0098' },
-  { bg: '#EFF7ED', border: '#277713', text: '#277713' },
-  { bg: '#E8EAF6', border: '#3949AB', text: '#3949AB' },
-];
-
-type ProfileWithColor = LearningProfile & { chipColor: typeof PROFILE_PALETTE[number] };
 
 const ICON_CHEVRON_LG = 'M6.28281 6.27969C5.98906 6.57344 5.51406 6.57344 5.22344 6.27969L0.220312 1.27969C-0.0734375 0.985937 -0.0734375 0.510937 0.220312 0.220312C0.514062 -0.0703125 0.989062 -0.0734375 1.27969 0.220312L5.74844 4.68906L10.2172 0.220312C10.5109 -0.0734375 10.9859 -0.0734375 11.2766 0.220312C11.5672 0.514062 11.5703 0.989062 11.2766 1.27969L6.27656 6.27969H6.28281Z';
 
@@ -57,17 +48,16 @@ function DsChevron({ open, color = '#8600F4' }: { open: boolean; color?: string 
   );
 }
 
-function getAdaptation(sectionId: string, profile: LearningProfile, topic: string): string {
-  const name = profile.name;
+function getAdaptation(sectionId: string, topic: string): string {
   const map: Record<string, string> = {
-    tema: `Texto com adaptação para ${name}: o conteúdo de "${topic}" será apresentado com recursos visuais e linguagem simplificada.`,
-    conteudo: `Texto com adaptação para ${name}: os tópicos serão divididos em etapas menores com exemplos do cotidiano.`,
-    metodologia: `Texto com adaptação para ${name}: instruções claras, pausas estratégicas e reforço positivo durante as atividades.`,
-    sequencias: `Texto com adaptação para ${name}: atividades com roteiro visual passo a passo e tempo adicional para conclusão.`,
-    avaliacoes: `Texto com adaptação para ${name}: avaliação oral ou por portfólio quando necessário.`,
-    recursos: `Texto com adaptação para ${name}: materiais em formatos acessíveis — fonte ampliada, áudio ou tátil conforme a necessidade.`,
+    tema: `o conteúdo de "${topic}" será apresentado com recursos visuais e linguagem simplificada.`,
+    conteudo: `os tópicos serão divididos em etapas menores com exemplos do cotidiano.`,
+    metodologia: `instruções claras, pausas estratégicas e reforço positivo durante as atividades.`,
+    sequencias: `atividades com roteiro visual passo a passo e tempo adicional para conclusão.`,
+    avaliacoes: `avaliação oral ou por portfólio quando necessário.`,
+    recursos: `materiais em formatos acessíveis — fonte ampliada, áudio ou tátil conforme a necessidade.`,
   };
-  return map[sectionId] ?? `Texto com adaptação para ${name}.`;
+  return map[sectionId] ?? `adaptação aplicada conforme as necessidades do perfil.`;
 }
 
 function buildSectionContent(sectionId: string, formData: PlanoFormData): string {
@@ -100,7 +90,7 @@ function SectionBody({
   topic,
 }: {
   content: string;
-  profiles: ProfileWithColor[];
+  profiles: LearningProfile[];
   sectionId: string;
   topic: string;
 }) {
@@ -133,34 +123,12 @@ function SectionBody({
         })}
       </div>
 
-      {/* Adaptation lines with profile name badge for accessibility */}
+      {/* Adaptation lines — profile name in semibold, adaptation text in normal weight */}
       {profiles.map((profile) => (
-        <div key={profile.id} className="flex gap-2 mt-2 items-start">
-          <span style={{ color: profile.chipColor.text, flexShrink: 0, lineHeight: 1.7 }}>•</span>
-          <div className="flex flex-wrap items-baseline gap-x-1.5">
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                padding: '1px 7px',
-                borderRadius: 9999,
-                fontSize: 10,
-                fontWeight: 700,
-                fontFamily: 'Plus Jakarta Sans, sans-serif',
-                background: profile.chipColor.bg,
-                border: `1px solid ${profile.chipColor.border}`,
-                color: profile.chipColor.text,
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-                lineHeight: 1.5,
-              }}
-            >
-              {profile.name}
-            </span>
-            <span style={{ color: profile.chipColor.text }}>
-              {getAdaptation(sectionId, profile, topic)}
-            </span>
-          </div>
+        <div key={profile.id} style={{ marginTop: 8 }}>
+          <span style={{ fontWeight: 600 }}>{profile.name}</span>
+          {': '}
+          <span>{getAdaptation(sectionId, topic)}</span>
         </div>
       ))}
     </div>
@@ -298,7 +266,7 @@ function PlanSection({
 
 /* ── Main component ──────────────────────────────────────────────────────── */
 
-export function PlanoGerado({ formData, onRegenerate, onSave }: PlanoGeradoProps) {
+export function PlanoGerado({ formData, onRegenerate, onSave, hideInternalTags }: PlanoGeradoProps) {
   const [openSections, setOpenSections] = useState<string[]>(['tema', 'duracao', 'conteudo', 'metodologia', 'sequencias', 'avaliacoes', 'recursos']);
   const [activeProfiles, setActiveProfiles] = useState<Set<string>>(new Set());
   const [editingSection, setEditingSection] = useState<string | null>(null);
@@ -347,13 +315,7 @@ export function PlanoGerado({ formData, onRegenerate, onSave }: PlanoGeradoProps
     ...(bnccCodes.length ? bnccCodes.slice(0, 3) : ['EF05CI07', 'EF05CI08']),
   ];
 
-  // Map each profile to its palette color by index
-  const profilesWithColor: ProfileWithColor[] = formData.selectedProfiles.map((p, i) => ({
-    ...p,
-    chipColor: PROFILE_PALETTE[i % PROFILE_PALETTE.length],
-  }));
-
-  const activeProfileList = profilesWithColor.filter((p) => activeProfiles.has(p.id));
+  const activeProfileList = formData.selectedProfiles.filter((p) => activeProfiles.has(p.id));
 
   const sectionProps = (id: string) => ({
     id,
@@ -476,28 +438,30 @@ export function PlanoGerado({ formData, onRegenerate, onSave }: PlanoGeradoProps
           </div>
         </div>
 
-        {/* Tags */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
-          {tags.map((tag, i) => (
-            <span
-              key={`${tag}-${i}`}
-              style={{
-                paddingLeft: 12,
-                paddingRight: 12,
-                paddingTop: 2,
-                paddingBottom: 2,
-                borderRadius: 9999,
-                fontFamily: 'Plus Jakarta Sans, sans-serif',
-                fontSize: 11,
-                fontWeight: 600,
-                background: i <= 1 ? '#F6F0FB' : '#8600F4',
-                color: i <= 1 ? '#494150' : '#fff',
-              }}
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+        {/* Tags — hidden when rendered inside PlanFullScreenView (which has its own tag row) */}
+        {!hideInternalTags && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+            {tags.map((tag, i) => (
+              <span
+                key={`${tag}-${i}`}
+                style={{
+                  paddingLeft: 12,
+                  paddingRight: 12,
+                  paddingTop: 2,
+                  paddingBottom: 2,
+                  borderRadius: 9999,
+                  fontFamily: 'Plus Jakarta Sans, sans-serif',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  background: i <= 1 ? '#F6F0FB' : '#8600F4',
+                  color: i <= 1 ? '#494150' : '#fff',
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Profile chips with indexed palette colors */}
         {hasInclusive && (
@@ -509,7 +473,7 @@ export function PlanoGerado({ formData, onRegenerate, onSave }: PlanoGeradoProps
               Selecione um perfil de aprendizagem para visualizar as respectivas adaptações no plano de aula
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {profilesWithColor.map((profile) => {
+              {formData.selectedProfiles.map((profile) => {
                 const isActive = activeProfiles.has(profile.id);
                 return (
                   <button
@@ -528,15 +492,15 @@ export function PlanoGerado({ formData, onRegenerate, onSave }: PlanoGeradoProps
                       fontFamily: 'Plus Jakarta Sans, sans-serif',
                       fontSize: 12,
                       fontWeight: isActive ? 600 : 400,
-                      background: isActive ? profile.chipColor.bg : '#fff',
-                      border: `1px solid ${isActive ? profile.chipColor.border : '#D3CADB'}`,
-                      color: isActive ? profile.chipColor.text : '#494150',
+                      background: isActive ? '#F4E8FE' : '#fff',
+                      border: `1px solid ${isActive ? '#8600F4' : '#D3CADB'}`,
+                      color: isActive ? '#8600F4' : '#494150',
                       transition: 'all 0.2s',
                     }}
                   >
                     <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                      <circle cx="5.5" cy="4.5" r="2" stroke={isActive ? profile.chipColor.text : '#A096A9'} strokeWidth="1.2" />
-                      <path d="M1.5 11C1.5 9.07 3.32 7.5 5.5 7.5S9.5 9.07 9.5 11" stroke={isActive ? profile.chipColor.text : '#A096A9'} strokeWidth="1.2" strokeLinecap="round" />
+                      <circle cx="5.5" cy="4.5" r="2" stroke={isActive ? '#8600F4' : '#A096A9'} strokeWidth="1.2" />
+                      <path d="M1.5 11C1.5 9.07 3.32 7.5 5.5 7.5S9.5 9.07 9.5 11" stroke={isActive ? '#8600F4' : '#A096A9'} strokeWidth="1.2" strokeLinecap="round" />
                     </svg>
                     {profile.name}
                   </button>
