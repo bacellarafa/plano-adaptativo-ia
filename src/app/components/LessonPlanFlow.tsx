@@ -1057,6 +1057,11 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
   };
   const cancelEditSaved = () => setEditingSavedId(null);
 
+  /* saved plan delete */
+  const deleteSaved = (id: string) => {
+    setSavedPlans((prev) => prev.filter((p) => p.id !== id));
+  };
+
   /* saved plan duplicate */
   const duplicateSaved = (item: SavedPlan) => {
     const copy: SavedPlan = {
@@ -1364,6 +1369,12 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
                           label: 'Duplicar',
                           icon: <IcoDuplicate />,
                           onClick: () => duplicateSaved(item),
+                        },
+                        {
+                          label: 'Excluir',
+                          icon: <IcoTrash />,
+                          onClick: () => deleteSaved(item.id),
+                          danger: true,
                         },
                       ]}
                     />
