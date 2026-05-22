@@ -821,10 +821,26 @@ function ProfilesTab({ formData, onChange, profileSearch, setProfileSearch, filt
 
         {/* Profile list */}
         {filteredProfiles.length === 0 ? (
-          <div className="flex-1 flex items-center justify-center">
-            <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, color: '#6E6576', textAlign: 'center' }}>
-              Nenhum perfil criado ainda
-            </p>
+          <div className="flex-1 flex flex-col items-center justify-center gap-4" style={{ paddingBottom: 80 }}>
+            <IonicaAtomIcon />
+            <div className="flex flex-col items-center gap-1 text-center">
+              <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 16, fontWeight: 700, color: '#0D0712', margin: 0 }}>
+                Nenhum perfil criado ainda
+              </p>
+              <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, color: '#6E6576', margin: 0 }}>
+                Crie perfis para adaptar seus planos de aula
+              </p>
+            </div>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="flex items-center gap-2 border-0 cursor-pointer"
+              style={{ background: '#8600F4', borderRadius: 8, height: 44, paddingLeft: 20, paddingRight: 20, fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 600, color: '#fff' }}
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M6 1V11M1 6H11" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              Novo perfil
+            </button>
           </div>
         ) : (
           <div className="flex flex-col">
@@ -1100,7 +1116,7 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
       {/* Tab bar */}
       <div className="flex items-center px-6 shrink-0 gap-1" style={{ borderBottom: '1px solid #E7DFEE', height: 52 }}>
         {[
-          { key: 'new', label: '+ Novo plano de aula', icon: null, badge: 0 },
+          { key: 'new', label: '+ Criar plano de aula', icon: null, badge: 0 },
           { key: 'history', label: 'Histórico', icon: <IconHistory />, badge: newHistoryCount },
           { key: 'saved', label: 'Planos salvos', icon: <IconSaved />, badge: newSavedCount },
           { key: 'profiles', label: 'Perfis de aprendizagem', icon: <IconProfiles />, badge: 0 },
@@ -1175,10 +1191,26 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
           <SearchBar value={historySearch} onChange={setHistorySearch} />
 
           {filteredHistory.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center">
-              <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, color: '#6E6576', textAlign: 'center' }}>
-                Nenhum plano no histórico
-              </p>
+            <div className="flex-1 flex flex-col items-center justify-center gap-4" style={{ paddingBottom: 80 }}>
+              <IonicaAtomIcon />
+              <div className="flex flex-col items-center gap-1 text-center">
+                <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 16, fontWeight: 700, color: '#0D0712', margin: 0 }}>
+                  Crie seu primeiro plano de aula
+                </p>
+                <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, color: '#6E6576', margin: 0 }}>
+                  Ao criar planos de aula, seu histórico fica aqui
+                </p>
+              </div>
+              <button
+                onClick={() => handleTabChange('new')}
+                className="flex items-center gap-2 border-0 cursor-pointer"
+                style={{ background: '#8600F4', borderRadius: 8, height: 44, paddingLeft: 20, paddingRight: 20, fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 600, color: '#fff' }}
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M6 1V11M1 6H11" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+                Criar plano de aula
+              </button>
             </div>
           ) : (
             <>
@@ -1246,10 +1278,26 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
           <SearchBar value={savedSearch} onChange={setSavedSearch} />
 
           {filteredSaved.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center">
-              <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, color: '#6E6576', textAlign: 'center' }}>
-                Nenhum plano salvo
-              </p>
+            <div className="flex-1 flex flex-col items-center justify-center gap-4" style={{ paddingBottom: 80 }}>
+              <IonicaAtomIcon />
+              <div className="flex flex-col items-center gap-1 text-center">
+                <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 16, fontWeight: 700, color: '#0D0712', margin: 0 }}>
+                  Nenhum plano salvo ainda
+                </p>
+                <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, color: '#6E6576', margin: 0 }}>
+                  Ao salvar um plano de aula, ele aparece aqui
+                </p>
+              </div>
+              <button
+                onClick={() => handleTabChange('new')}
+                className="flex items-center gap-2 border-0 cursor-pointer"
+                style={{ background: '#8600F4', borderRadius: 8, height: 44, paddingLeft: 20, paddingRight: 20, fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 600, color: '#fff' }}
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M6 1V11M1 6H11" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+                Criar plano de aula
+              </button>
             </div>
           ) : (
             <>
@@ -1410,10 +1458,10 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
                   disabled={!canContinue}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-all"
                   style={{
-                    background: canContinue ? '#8600F4' : '#fff',
-                    borderColor: canContinue ? '#8600F4' : '#D3CADB',
+                    background: canContinue ? '#8600F4' : '#E7DFEE',
+                    borderColor: canContinue ? '#8600F4' : '#E7DFEE',
                     fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 600,
-                    color: canContinue ? '#fff' : '#D3CADB', cursor: canContinue ? 'pointer' : 'default',
+                    color: canContinue ? '#fff' : '#A096A9', cursor: canContinue ? 'pointer' : 'default',
                   }}
                 >
                   Continuar
@@ -1456,6 +1504,29 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
       )}
 
     </div>
+  );
+}
+
+/* ── Iônica atom empty-state icon ───────────────────────────────────────── */
+
+function IonicaAtomIcon() {
+  return (
+    <svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Center nucleus */}
+      <circle cx="48" cy="48" r="10" fill="#8600F4" />
+      {/* Orbit 1 – horizontal ellipse */}
+      <ellipse cx="48" cy="48" rx="44" ry="18" stroke="#BAB0C3" strokeWidth="1.8" fill="none" />
+      {/* Orbit 2 – rotated 60° */}
+      <ellipse cx="48" cy="48" rx="44" ry="18" stroke="#BAB0C3" strokeWidth="1.8" fill="none"
+        transform="rotate(60 48 48)" />
+      {/* Orbit 3 – rotated 120° */}
+      <ellipse cx="48" cy="48" rx="44" ry="18" stroke="#BAB0C3" strokeWidth="1.8" fill="none"
+        transform="rotate(120 48 48)" />
+      {/* Small electron dots */}
+      <circle cx="92" cy="48" r="4" fill="#BAB0C3" />
+      <circle cx="25" cy="12" r="4" fill="#BAB0C3" />
+      <circle cx="25" cy="84" r="4" fill="#BAB0C3" />
+    </svg>
   );
 }
 

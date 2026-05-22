@@ -269,31 +269,29 @@ export function StepContexto({ formData, onChange }: StepContextoProps) {
               Componente curricular<span style={{ color: '#8600F4' }}>*</span>
             </span>
           </div>
-          {/* Selected chips + count when collapsed */}
-          {!componenteOpen && (
-            <div className="flex items-center gap-1.5 mr-2 shrink-0 flex-wrap">
-              {formData.subject.map((s) => (
-                <span
-                  key={s}
-                  style={{
-                    fontFamily: 'Plus Jakarta Sans, sans-serif',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: '#8600F4',
-                    background: '#F4E8FE',
-                    border: '1px solid #D3CADB',
-                    borderRadius: 4,
-                    padding: '2px 8px',
-                  }}
-                >
-                  {s}
-                </span>
-              ))}
-              <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: formData.subject.length > 0 ? '#494150' : '#A096A9' }}>
-                {formData.subject.length}/3 selecionados
+          {/* Selected chips + count — always visible */}
+          <div className="flex items-center gap-1.5 mr-2 shrink-0 flex-wrap">
+            {formData.subject.map((s) => (
+              <span
+                key={s}
+                style={{
+                  fontFamily: 'Plus Jakarta Sans, sans-serif',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: '#8600F4',
+                  background: '#F4E8FE',
+                  border: '1px solid #D3CADB',
+                  borderRadius: 4,
+                  padding: '2px 8px',
+                }}
+              >
+                {s}
               </span>
-            </div>
-          )}
+            ))}
+            <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: formData.subject.length > 0 ? '#494150' : '#A096A9' }}>
+              {formData.subject.length}/3 selecionados
+            </span>
+          </div>
           <DsChevron open={componenteOpen} color={componenteOpen ? '#8600F4' : '#494150'} />
         </button>
         <SepLine />
