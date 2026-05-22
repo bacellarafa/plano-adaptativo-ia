@@ -1,6 +1,6 @@
 export interface ContextoFormData {
   year: string;
-  subject: string;
+  subject: string[];
   numLessons: string;
   lessonTime: string;
 }
@@ -69,21 +69,24 @@ function DsChevron({ open, color = '#494150' }: { open: boolean; color?: string 
 }
 
 /** Pill chip for year/subject selection */
-function SelectChip({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
+function SelectChip({ label, selected, onClick, disabled }: { label: string; selected: boolean; onClick: () => void; disabled?: boolean }) {
   return (
     <button
-      onClick={onClick}
-      className="border cursor-pointer transition-colors"
+      onClick={disabled && !selected ? undefined : onClick}
+      disabled={disabled && !selected}
+      className="border transition-colors"
       style={{
         fontFamily: 'Plus Jakarta Sans, sans-serif',
         fontSize: 13,
         fontWeight: selected ? 600 : 400,
-        color: selected ? '#8600F4' : '#494150',
+        color: selected ? '#8600F4' : disabled ? '#BAB0C3' : '#494150',
         background: selected ? '#F4E8FE' : '#fff',
         borderColor: selected ? '#8600F4' : '#D3CADB',
         borderRadius: 100,
         padding: '6px 16px',
         whiteSpace: 'nowrap',
+        cursor: disabled && !selected ? 'not-allowed' : 'pointer',
+        opacity: disabled && !selected ? 0.6 : 1,
       }}
     >
       {label}
@@ -164,7 +167,15 @@ export function StepContexto({ formData, onChange }: StepContextoProps) {
   const [componenteOpen, setComponenteOpen] = useState(false);
 
   const selectYear = (v: string) => onChange({ year: v });
-  const selectSubject = (s: string) => onChange({ subject: s });
+  const toggleSubject = (s: string) => {
+    const current = formData.subject;
+    if (current.includes(s)) {
+      onChange({ subject: current.filter((x) => x !== s) });
+    } else if (current.length < 3) {
+      onChange({ subject: [...current, s] });
+    }
+  };
+  const atSubjectLimit = formData.subject.length >= 3;
 
   return (
     <div className="flex flex-col gap-0">
@@ -258,32 +269,30 @@ export function StepContexto({ formData, onChange }: StepContextoProps) {
               Componente curricular<span style={{ color: '#8600F4' }}>*</span>
             </span>
           </div>
-          {/* Selected chip + count when collapsed */}
-          {formData.subject && !componenteOpen && (
-            <div className="flex items-center gap-1.5 mr-2 shrink-0">
-              <span
-                style={{
-                  fontFamily: 'Plus Jakarta Sans, sans-serif',
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: '#8600F4',
-                  background: '#F4E8FE',
-                  border: '1px solid #D3CADB',
-                  borderRadius: 4,
-                  padding: '2px 8px',
-                }}
-              >
-                {formData.subject}
-              </span>
-              <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: '#494150' }}>
-                1/3 selecionados
+          {/* Selected chips + count when collapsed */}
+          {!componenteOpen && (
+            <div className="flex items-center gap-1.5 mr-2 shrink-0 flex-wrap">
+              {formData.subject.map((s) => (
+                <span
+                  key={s}
+                  style={{
+                    fontFamily: 'Plus Jakarta Sans, sans-serif',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: '#8600F4',
+                    background: '#F4E8FE',
+                    border: '1px solid #D3CADB',
+                    borderRadius: 4,
+                    padding: '2px 8px',
+                  }}
+                >
+                  {s}
+                </span>
+              ))}
+              <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: formData.subject.length > 0 ? '#494150' : '#A096A9' }}>
+                {formData.subject.length}/3 selecionados
               </span>
             </div>
-          )}
-          {!formData.subject && !componenteOpen && (
-            <span style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: '#A096A9', marginRight: 8 }}>
-              0/3 selecionados
-            </span>
           )}
           <DsChevron open={componenteOpen} color={componenteOpen ? '#8600F4' : '#494150'} />
         </button>
@@ -291,13 +300,19 @@ export function StepContexto({ formData, onChange }: StepContextoProps) {
 
         {componenteOpen && (
           <div className="px-4 pb-4 pt-3">
+            {atSubjectLimit && (
+              <p style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 12, color: '#8600F4', fontWeight: 600, marginBottom: 8 }}>
+                Limite atingido. Remova um componente para selecionar outro.
+              </p>
+            )}
             <div className="flex flex-wrap gap-2">
               {SUBJECTS.map((subj) => (
                 <SelectChip
                   key={subj}
                   label={subj}
-                  selected={formData.subject === subj}
-                  onClick={() => selectSubject(formData.subject === subj ? '' : subj)}
+                  selected={formData.subject.includes(subj)}
+                  onClick={() => toggleSubject(subj)}
+                  disabled={atSubjectLimit && !formData.subject.includes(subj)}
                 />
               ))}
             </div>

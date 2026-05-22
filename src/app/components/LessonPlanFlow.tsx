@@ -60,7 +60,7 @@ type FlowStep = 1 | 2 | 3 | 'loading' | 'result';
 
 interface FormData {
   year: string;
-  subject: string;
+  subject: string[];
   numLessons: string;
   lessonTime: string;
   topic: string;
@@ -73,7 +73,7 @@ interface FormData {
 
 const INITIAL_FORM: FormData = {
   year: '',
-  subject: '',
+  subject: [],
   numLessons: '2',
   lessonTime: '50',
   topic: '',
@@ -182,7 +182,7 @@ function StepIndicator({ step }: { step: FlowStep }) {
 
 interface PlanTags {
   year: string;
-  subject: string;
+  subject: string[];
   bnccSkills: string[];
   adapted: boolean;
 }
@@ -207,7 +207,7 @@ interface SavedPlan {
 
 const DEFAULT_TAGS: PlanTags = {
   year: '1º Ano – Ensino Fundamental',
-  subject: 'Ciências',
+  subject: ['Ciências'],
   bnccSkills: ['EM13LGG100', 'EM13LGG101', 'EM13LGG102'],
   adapted: true,
 };
@@ -245,22 +245,25 @@ function PlanTagList({ tags }: { tags: PlanTags }) {
       >
         {tags.year}
       </span>
-      {/* Subject tag */}
-      <span
-        style={{
-          fontFamily: 'Plus Jakarta Sans, sans-serif',
-          fontSize: 12,
-          fontWeight: 500,
-          color: '#494150',
-          background: '#fff',
-          border: '1px solid #D3CADB',
-          borderRadius: 4,
-          padding: '2px 8px',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {tags.subject}
-      </span>
+      {/* Subject tags (one chip per subject) */}
+      {tags.subject.map((subj) => (
+        <span
+          key={subj}
+          style={{
+            fontFamily: 'Plus Jakarta Sans, sans-serif',
+            fontSize: 12,
+            fontWeight: 500,
+            color: '#494150',
+            background: '#fff',
+            border: '1px solid #D3CADB',
+            borderRadius: 4,
+            padding: '2px 8px',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {subj}
+        </span>
+      ))}
       {/* BNCC skill tags */}
       {tags.bnccSkills.map((skill) => (
         <span
@@ -491,10 +494,7 @@ function PlanFullScreenView({
           </svg>
           Voltar
         </button>
-        {/* Tags */}
-        <div className="flex flex-wrap items-center gap-1.5 flex-1">
-          <PlanTagList tags={item.tags} />
-        </div>
+        <div className="flex-1" />
         {/* Action buttons */}
         <div className="flex items-center gap-2 shrink-0">
           {onRegenerate && (
@@ -952,7 +952,7 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
     setFormData((prev) => ({ ...prev, ...data }));
   };
 
-  const isStep1Valid = !!formData.year && !!formData.subject && !!formData.numLessons && !!formData.lessonTime;
+  const isStep1Valid = !!formData.year && formData.subject.length > 0 && !!formData.numLessons && !!formData.lessonTime;
   const isStep2Valid = !!formData.topic;
   const isStep3Valid = true;
 
@@ -975,7 +975,7 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
 
   const buildPlanTags = useCallback((): PlanTags => ({
     year: formData.year || '1º Ano – Ensino Fundamental',
-    subject: formData.subject || 'Ciências',
+    subject: formData.subject.length > 0 ? formData.subject : ['Ciências'],
     bnccSkills: formData.bnccSkills,
     adapted: formData.inclusivePlan || formData.selectedProfiles.length > 0,
   }), [formData]);
@@ -1154,7 +1154,7 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
         {/* Help / info button */}
         <button
           className="flex items-center justify-center rounded-full border-0 bg-transparent cursor-pointer hover:bg-[#F6F0FB]"
-          style={{ width: 32, height: 32, border: '1.5px solid #D3CADB' }}
+          style={{ width: 32, height: 32 }}
           title="Ajuda"
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -1187,7 +1187,7 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
               className="border-0 bg-transparent cursor-pointer"
               style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', fontSize: 14, fontWeight: 600, color: '#8600F4' }}
             >
-              Limpar histórico
+              Excluir histórico
             </button>
           </div>
 
@@ -1385,7 +1385,7 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
               </h1>
               <button
                 className="flex items-center justify-center rounded-full border-0 bg-transparent cursor-pointer"
-                style={{ width: 28, height: 28, border: '1.5px solid #D3CADB' }}
+                style={{ width: 28, height: 28 }}
               >
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <circle cx="7" cy="7" r="6" stroke="#A096A9" strokeWidth="1.4" />
@@ -1460,7 +1460,7 @@ export function LessonPlanFlow({ onClose }: LessonPlanFlowProps) {
                   formData={{ topic: formData.topic, bnccSkills: formData.bnccSkills }}
                   onChange={updateForm}
                   selectedYear={formData.year}
-                  selectedSubject={formData.subject}
+                  selectedSubject={formData.subject[0] ?? ''}
                 />
               )}
               {step === 3 && (
@@ -1542,3 +1542,4 @@ function IcoDuplicate() {
     </svg>
   );
 }
+                                                                                                                                                                              
